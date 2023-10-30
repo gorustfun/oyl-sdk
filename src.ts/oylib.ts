@@ -213,7 +213,7 @@ export class Wallet {
     const history = await this.apiClient.getTxByAddress(address)
     const processedTransactions = history
       .map((tx) => {
-        const { hash, height, time, outputs, inputs, confirmations } = tx
+        const { hash, height, time, outputs, inputs, confirmations, fee } = tx
 
         const output = outputs.find((output) => output.address === address)
         const input = inputs.find((input) => input.coin.address === address)
@@ -224,6 +224,8 @@ export class Wallet {
         txDetails['blockheight'] = height
         if (input) {
           txDetails['type'] = 'sent'
+          txDetails['fee'] = fee
+          txDetails['feeRate'] = fee / 140
           txDetails['to'] = outputs.find(
             (output) => output.address != address
           )?.address
@@ -236,6 +238,8 @@ export class Wallet {
           if (output) {
             txDetails['type'] = 'received'
             txDetails['amount'] = output.value / 1e8
+            txDetails['fee'] = fee
+            txDetails['feeRate'] = fee / 140
             txDetails['from'] = inputs.find(
               (input) => input.coin.address != address
             ).coin.address
