@@ -108,7 +108,8 @@ export declare enum AddressType {
     P2PKH = 0,
     P2TR = 1,
     P2SH_P2WPKH = 2,
-    P2WPKH = 3
+    P2WPKH = 3,
+    P2SH = 4
 }
 export interface ProviderOptions {
     network: String;

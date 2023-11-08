@@ -108,6 +108,7 @@ export function utxoToInput(utxo: UnspentOutput, publicKey: Buffer): TxInput {
       }
 
     case AddressType.P2SH_P2WPKH:
+    case AddressType.P2SH:
       const redeemData = bitcoin.payments.p2wpkh({ pubkey: publicKey })
       data = {
         hash: utxo.txId,

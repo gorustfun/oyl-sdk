@@ -119,6 +119,7 @@ export enum AddressType {
   P2TR,
   P2SH_P2WPKH,
   P2WPKH,
+  P2SH,
 }
 
 export interface ProviderOptions {
