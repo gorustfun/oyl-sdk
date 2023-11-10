@@ -1,4 +1,4 @@
-import fetch from 'node-fetch'
+import fetch, { RequestInit } from 'node-fetch'
 import { SwapBrcBid, SignedBid } from '../shared/interface'
 
 /**
@@ -46,6 +46,9 @@ export class OylApiClient {
       }
 
       const response = await fetch(`${this.host}${path}`, options)
+      if (!response.ok) {
+        throw new Error('Network response was not ok')
+      }
       return await response.json()
     } catch (err) {
       throw err
