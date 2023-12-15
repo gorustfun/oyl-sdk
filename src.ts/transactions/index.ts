@@ -113,9 +113,9 @@ export function getAddressType(address: string): AddressType | null {
     return 2
   } else if (address.startsWith('bc1q')) {
     return 3
-  } else {
-    return null // If the address doesn't match any known type
   }
+
+  throw Error('Invalid address type.')
 }
 
 export const validateTaprootAddress = ({ address, type }) => {
