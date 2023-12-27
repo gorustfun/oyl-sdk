@@ -416,7 +416,6 @@ export class Oyl {
             voutSum += output.value
           }
         }
-
         const txDetails = {}
         txDetails['txId'] = txid
         txDetails['confirmations'] = confirmations
