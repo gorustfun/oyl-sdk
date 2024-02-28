@@ -1150,3 +1150,8 @@ export const createBtcTx = async ({
     rawTxn: signedPsbt.extractTransaction().toHex(),
   }
 }
+
+export const createTaprootBtcTx = async ({}) => {
+  const rawTxn = ''
+  return { rawTxn: rawTxn }
+}

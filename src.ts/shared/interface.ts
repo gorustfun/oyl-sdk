@@ -236,6 +236,12 @@ export interface SignedBid {
   auctionId: String
   bidId: String
 }
+export const addressEnumToType = {
+  0: 'p2pkh',
+  1: 'p2sh',
+  2: 'p2wpkh',
+  3: 'p2tr',
+} as const
 
 export const addressTypeToName = {
   p2pkh: 'legacy',

@@ -14,6 +14,7 @@ import {
   calculateTaprootTxSize,
   calculateAmountGatheredUtxo,
   filterTaprootUtxos,
+  createTaprootBtcTx,
 } from './shared/utils'
 import { SandshrewBitcoinClient } from './rpclient/sandshrew'
 import { EsploraRpc } from './rpclient/esplora'
@@ -40,6 +41,7 @@ import { Provider } from './rpclient/provider'
 import { OrdRpc } from './rpclient/ord'
 import { HdKeyring } from './wallet/hdKeyring'
 import { getAddressType } from './transactions'
+import { Signer } from './signer'
 
 export const NESTED_SEGWIT_HD_PATH = "m/49'/0'/0'/0"
 export const TAPROOT_HD_PATH = "m/86'/0'/0'/0"
@@ -79,7 +81,7 @@ export class Oyl {
     this.apiClient = new OylApiClient({
       host: 'https://api.oyl.gg',
       testnet: options.network == 'testnet' ? true : null,
-      apiKey: apiKey
+      apiKey: apiKey,
     })
     const rpcUrl = `${options.baseUrl}/${options.version}/${options.projectId}`
     const provider = new Provider(rpcUrl)
@@ -642,6 +644,66 @@ export class Oyl {
   }
 
   /**
+   * Creates a Partially Signed Bitcoin Transaction (PSBT) to send regular satoshis, signs and broadcasts it.
+   * @param {Object} params - The parameters for creating the PSBT.
+   * @param {string} params.to - The receiving address.
+   * @param {string} params.from - The sending address.
+   * @param {string} params.amount - The amount to send.
+   * @param {number} params.feeRate - The transaction fee rate.
+   * @param {any} params.privateKey - The private key associated with the transaction.
+   * @returns {Promise<Object>} A promise that resolves to an object containing transaction ID and other response data from the API client.
+   */
+
+  async sendBtcTaproot({
+    to,
+    from,
+    amount,
+    feeRate,
+    privateKey,
+  }: {
+    to: string
+    from: string
+    amount: number
+    feeRate?: number
+    privateKey: string
+  }) {
+    const taprootUtxos = await this.getUtxosArtifacts({
+      address: from,
+    })
+
+    if (!feeRate) {
+      feeRate = (await this.esploraRpc.getFeeEstimates())['1']
+    }
+
+    const signer = new Signer(this.network, privateKey, 0)
+
+    const { rawTxn } = await createTaprootBtcTx({
+      inputAddress: from,
+      outputAddress: to,
+      amount: amount,
+      feeRate: feeRate,
+      privateKey: privateKey,
+      network: this.network,
+      taprootUtxos: taprootUtxos,
+    })
+
+    const { signedTxnId, signedRawTxn } = await signer.SignAllInputs({ rawTxn })
+
+    const [result] =
+      await this.sandshrewBtcClient.bitcoindRpc.testMemPoolAccept([
+        signedRawTxn,
+      ])
+
+    if (!result.allowed) {
+      throw new Error(result['reject-reason'])
+    }
+
+    await this.sandshrewBtcClient.bitcoindRpc.sendRawTransaction(signedRawTxn)
+
+    return { txnId: signedTxnId, rawTxn: signedRawTxn }
+  }
+
+  /**
    * Retrieves information about a SegWit address.
    * @param {Object} params - The parameters containing the address information.
    * @param {string} params.address - The SegWit address to validate and get information for.
@@ -1156,7 +1218,11 @@ export class Oyl {
 
       await this.sandshrewBtcClient.bitcoindRpc.sendRawTransaction(sendTxHex)
 
-      return { txId: sendTxId, rawTxn: sendTxHex, sendBrc20Txids: [commitTx, revealTx, sendTxId] }
+      return {
+        txId: sendTxId,
+        rawTxn: sendTxHex,
+        sendBrc20Txids: [commitTx, revealTx, sendTxId],
+      }
     } catch (err) {
       console.error(err)
       throw new Error(err)
