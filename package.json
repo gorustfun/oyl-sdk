@@ -35,7 +35,6 @@
     "bitcore-lib": "^10.0.5",
     "bitcore-mnemonic": "^10.0.5",
     "change-case": "^4.1.2",
-    "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "ecpair": "^2.1.0",
     "fs-extra": "^11.1.1",
