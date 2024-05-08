@@ -409,7 +409,7 @@ export const createInscriptionScript = (pubKey: string, content: any) => {
   const contentHex = Buffer.from(textEncoder.encode(content)).toString('hex')
   const markerHex = '6f7264'
 
-  return `${pubKey} OP_CHECKSIG OP_0 OP_IF ${markerHex} 01 ${mimeTypeHex} OP_0 ${contentHex} OP_ENDIF`
+  return `${pubKey} OP_CHECKSIG OP_0 OP_IF ${markerHex} ${mimeTypeHex} OP_0 ${contentHex} OP_ENDIF`
 }
 
 function encodeToBase26(inputString: string): string {
