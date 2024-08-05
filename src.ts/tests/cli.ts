@@ -34,10 +34,8 @@ bitcoin.initEccLib(ecc2)
 export async function loadRpc(options) {
   const wallet = new Oyl()
   try {
-    const newWallet = await wallet.getUtxosArtifacts({
-      address: 'bc1pmtkac5u6rx7vkwhcnt0gal5muejwhp8hcrmx2yhvjg8nenu7rp3syw6yp0',
-    })
-    console.log('newWallet:', newWallet)
+    const newWallet = await wallet.sandshrewBtcClient.bitcoindRpc.decodePSBT(process.env.PSBT_BASE64)
+    console.log('newWallet:', JSON.stringify(newWallet))
   } catch (error) {
     console.error('Error:', error)
   }
