@@ -34,7 +34,8 @@ bitcoin.initEccLib(ecc2)
 export async function loadRpc(options) {
   const wallet = new Oyl()
   try {
-    const newWallet = await wallet.sandshrewBtcClient.bitcoindRpc.decodePSBT(process.env.PSBT_BASE64)
+    const ppsbt = await convertPsbt()
+    const newWallet = await wallet.sandshrewBtcClient.bitcoindRpc.decodePSBT(ppsbt)
     console.log('newWallet:', JSON.stringify(newWallet))
   } catch (error) {
     console.error('Error:', error)
@@ -112,12 +113,8 @@ export async function convertPsbt() {
   const psbt = bitcoin.Psbt.fromHex(process.env.PSBT_HEX, {
     network: bitcoin.networks.bitcoin,
   }).toBase64()
-  console.log(psbt)
-  console.log(
-    bitcoin.Psbt.fromBase64(psbt, {
-      network: bitcoin.networks.bitcoin,
-    }).data.inputs
-  )
+
+  return psbt
 }
 
 export async function callAPI(command, data, options = {}) {
