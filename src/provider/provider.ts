@@ -16,45 +16,55 @@ export type ProviderConstructorArgs = {
   opiUrl?: string
 }
 
-export const defaultNetworkOptions = (networkType:string) => {
-  switch(networkType) {
-    case('mainnet'):
-        return {baseUrl: 'https://mainnet.sandshrew.io',
-          version: 'v1',
-          projectId: process.env.SANDSHREW_PROJECT_ID,
-          network: 'mainnet',
-          apiUrl: 'https://api.oyl.gg',
-          opiUrl: 'https://mainnet-opi.sandshrew.io/v1'
+export const defaultNetworkOptions = (networkType: string) => {
+  switch (networkType) {
+    case 'mainnet':
+      return {
+        baseUrl: 'https://mainnet.sandshrew.io',
+        version: 'v1',
+        projectId: process.env.SANDSHREW_PROJECT_ID,
+        network: 'mainnet',
+        apiUrl: 'https://api.oyl.gg',
+        opiUrl: 'https://mainnet-opi.sandshrew.io/v1',
       }
-    case('testnet'):
+    case 'bells-mainnet':
+      return {
+        baseUrl: 'https://bells.sandshrew.io',
+        version: 'v1',
+        projectId: process.env.SANDSHREW_PROJECT_ID,
+        network: 'bells-mainnet',
+        apiUrl: 'https://api.oyl.gg',
+        opiUrl: 'http://localhost:3000',
+      }
+    case 'testnet':
       return {
         baseUrl: 'https://testnet.sandshrew.io',
-          version: 'v1',
-          projectId: process.env.SANDSHREW_PROJECT_ID,
-          network: 'testnet',
-          apiUrl: 'https://testnet-api.oyl.gg',
-          opiUrl: 'https://testnet-opi.sandshrew.io/v1',
+        version: 'v1',
+        projectId: process.env.SANDSHREW_PROJECT_ID,
+        network: 'testnet',
+        apiUrl: 'https://testnet-api.oyl.gg',
+        opiUrl: 'https://testnet-opi.sandshrew.io/v1',
       }
-      case('regtest'):
-        return {
-            baseUrl: 'http://localhost:3000',
-          version: 'v1',
-          projectId: 'regtest',
-          network: 'regtest',
-          apiUrl: 'https://mainnet-api.oyl.gg',
-          opiUrl: 'http://localhost:3000',
+    case 'regtest':
+      return {
+        baseUrl: 'http://localhost:3000',
+        version: 'v1',
+        projectId: 'regtest',
+        network: 'regtest',
+        apiUrl: 'https://mainnet-api.oyl.gg',
+        opiUrl: 'http://localhost:3000',
       }
-      case('signet'):
-        return {
-          baseUrl: 'https://signet.sandshrew.io',
-          version: 'v1',
-          projectId: process.env.SANDSHREW_PROJECT_ID,
-          network: 'signet',
-          apiUrl: 'https://signet-api.oyl.gg',
-          opiUrl: 'https://testnet-opi.sandshrew.io/v1',
+    case 'signet':
+      return {
+        baseUrl: 'https://signet.sandshrew.io',
+        version: 'v1',
+        projectId: process.env.SANDSHREW_PROJECT_ID,
+        network: 'signet',
+        apiUrl: 'https://signet-api.oyl.gg',
+        opiUrl: 'https://testnet-opi.sandshrew.io/v1',
       }
-      default:
-        throw new Error(`Invalid network specified ${networkType}`)
+    default:
+      throw new Error(`Invalid network specified ${networkType}`)
   }
 }
 
