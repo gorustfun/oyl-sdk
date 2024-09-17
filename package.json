@@ -57,6 +57,7 @@
     "ecpair": "^2.1.0",
     "fs-extra": "^11.1.1",
     "jsontokens": "^4.0.1",
+    "leb128": "^0.0.5",
     "nice-repl": "^0.1.2",
     "noble-secp256k1": "^1.2.14",
     "node-fetch": "^2.7.0",

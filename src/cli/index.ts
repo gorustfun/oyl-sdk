@@ -645,10 +645,7 @@ const runeProtoburn = new Command('protoburn')
     '-m, --mnemonic <mnemonic>',
     'mnemonic you want to get private keys from'
   )
-  .requiredOption(
-    '-protoTag, --protocolTag <protoTag>',
-    'Protorune Tag to be set'
-  )
+  .requiredOption('-tag, --protocolTag <protoTag>', 'Protorune Tag to be set')
   .requiredOption('-rId, --runeId <runeId>', 'name of rune to etch')
   .requiredOption('-ptr, --pointer <pointer>', 'the amount of runes each mint')
   .option('-legacy, --legacy <legacy>', 'legacy private key')
@@ -662,14 +659,14 @@ const runeProtoburn = new Command('protoburn')
     'native segwit private key'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
-  .option('-amt, --amount <amt>', 'amount to burn')
+  .option('-amt, --amount <amount>', 'amount to burn')
   .option(
-    '-inscAdd, --inscriptionAddress <inscAdd>',
+    '-inscAdd, --inscriptionAddress <inscriptionAdd>',
     'address runes live on that you are burning'
   )
 
   /* @dev example call 
-oyl rune protoburn -m 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about' -native 4604b4b710fe91f584fff084e1a9159fe4f8408fff380596a604948474ce4fa3 -taproot 41f41d69260df4cf277826a9b65a3717e4eeddbeedf637f212ca096576479361 -p regtest -feeRate 2 -inscAdd "bc1p..." -amt 100 -protoTag testing -rId 271:1 -ptr 0
+oyl rune protoburn -m 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about' -native 4604b4b710fe91f584fff084e1a9159fe4f8408fff380596a604948474ce4fa3 -taproot 41f41d69260df4cf277826a9b65a3717e4eeddbeedf637f212ca096576479361 -p regtest -feeRate 2 -tag 369 -inscAdd 'bcrt1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqvg32hk' -amt 100 -rId 263:1 -ptr 0
 */
 
   .action(async (options) => {
@@ -686,13 +683,14 @@ oyl rune protoburn -m 'abandon abandon abandon abandon abandon abandon abandon a
         network: provider.network,
       },
     })
+
     console.log(
       await rune.protoburn({
         pointer: Number(options.pointer),
         runeId: options.runeId,
-        inscriptionAddress: options.inscAdd,
-        amount: Number(options.amt),
-        protocolTag: options.protoTag,
+        inscriptionAddress: options.inscriptionAddress,
+        amount: Number(options.amount),
+        protocolTag: options.protocolTag,
         feeRate: options.feeRate,
         account,
         signer,
@@ -963,6 +961,7 @@ const runeCommand = new Command('rune')
   .addCommand(runeSend)
   .addCommand(runeMint)
   .addCommand(runeEtch)
+  .addCommand(runeProtoburn)
   .addCommand(getRuneByName)
 
 const providerCommand = new Command('provider')

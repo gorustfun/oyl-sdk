@@ -696,6 +696,18 @@ export const createProtoBurnPsbt = async ({
     if (gatheredUtxos.totalAmount < finalFee + inscriptionSats) {
       throw new OylTransactionError(Error('Insufficient Balance'))
     }
+
+    psbt.addInput({
+      hash: 'b3b9ce5b174aba757ce149d9df1fe573e0efa59be365215f70e548180f23e1b2',
+      index: 1,
+      witnessUtxo: {
+        value: 546,
+        script: Buffer.from(
+          '5120a60869f0dbcf1dc659c9cecbaf8050135ea9e8cdc487053f1dc6880949dc684c',
+          'hex'
+        ),
+      },
+    })
     const runeIdSplit = runeId.split(':')
     const block = BigInt(runeIdSplit[0])
     const tx = Number(runeIdSplit[1])
@@ -716,7 +728,7 @@ export const createProtoBurnPsbt = async ({
       gatheredUtxos.totalAmount - (finalFee + inscriptionSats)
 
     psbt.addOutput({
-      value: inscriptionSats,
+      value: inscriptionSats + runeTotalSatoshis,
       address: account.taproot.address,
     })
 

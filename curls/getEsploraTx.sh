@@ -4,5 +4,5 @@ curl -s 'http://localhost:3000/v1/regtest' \
     "jsonrpc": "2.0",
     "id": 1,
     "method": "esplora_tx",
-    "params": ["8913339817f6d81236bb0d550db203faac55490d5f7bf6a09597397ba04f5dbf"]
+    "params": ["b3b9ce5b174aba757ce149d9df1fe573e0efa59be365215f70e548180f23e1b2"]
 }' | jq .
