@@ -374,19 +374,28 @@ export const accountUtxos = async ({
   account: Account
   provider: Provider
 }) => {
-  let accountSpendableTotalBalance: number = 0
-  let accountPendingTotalBalance: number = 0
-  let accountTotalBalance: number = 0
-  const accounts = {}
   const addresses = [
     { addressType: 'nativeSegwit', address: account.nativeSegwit.address },
     { addressType: 'nestedSegwit', address: account.nestedSegwit.address },
     { addressType: 'taproot', address: account.taproot.address },
     { addressType: 'legacy', address: account.legacy.address },
   ]
-  for (let i = 0; i < addresses.length; i++) {
-    const address = addresses[i].address
-    const addressType = addresses[i].addressType
+
+  const results = await Promise.all(
+    addresses.map(({ address }) =>
+      addressUtxos({
+        address,
+        provider,
+      })
+    )
+  )
+
+  let accountSpendableTotalBalance: number = 0
+  let accountPendingTotalBalance: number = 0
+  let accountTotalBalance: number = 0
+  const accounts = {}
+
+  addresses.forEach((address, index) => {
     const {
       spendableTotalBalance,
       spendableUtxos,
@@ -395,16 +404,13 @@ export const accountUtxos = async ({
       pendingUtxos,
       pendingTotalBalance,
       totalBalance,
-    } = await addressUtxos({
-      address,
-      provider,
-    })
+    } = results[index]
 
     accountSpendableTotalBalance += spendableTotalBalance
     accountPendingTotalBalance += pendingTotalBalance
     accountTotalBalance += totalBalance
 
-    accounts[addressType] = {
+    accounts[address.addressType] = {
       spendableTotalBalance,
       spendableUtxos,
       runeUtxos,
@@ -413,7 +419,8 @@ export const accountUtxos = async ({
       pendingTotalBalance,
       totalBalance,
     }
-  }
+  })
+
   return {
     accountTotalBalance,
     accountSpendableTotalBalance,
