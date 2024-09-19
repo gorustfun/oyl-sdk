@@ -420,7 +420,7 @@ export function batchMarketplaceOffer(offers: MarketplaceOffer[]): (MarketplaceO
     });
 
     return Object.entries(groupedOffers).flatMap(([marketplace, marketplaceOffers]) => {
-        if (marketplace === 'unisat' || marketplace === 'ordinals-wallet') {
+        if (marketplace === 'unisat' || marketplace === 'ordinals-wallet' || marketplace === 'okx') {
             const batchOffer: MarketplaceBatchOffer = {
                 ticker: marketplaceOffers[0].ticker,
                 offerId: [],
@@ -441,7 +441,7 @@ export function batchMarketplaceOffer(offers: MarketplaceOffer[]): (MarketplaceO
                 batchOffer.unitPrice?.push(offer.unitPrice || 0);
                 batchOffer.totalPrice?.push(offer.totalPrice || 0);
 
-                if (marketplace === 'unisat') {
+                if (marketplace === 'unisat' || marketplace === 'okx') {
                     batchOffer.amount?.push(offer.amount || '');
                     batchOffer.address?.push(offer.address || '');
                 } else if (marketplace === 'ordinals-wallet') {
