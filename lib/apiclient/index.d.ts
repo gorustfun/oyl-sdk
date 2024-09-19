@@ -192,7 +192,7 @@ export declare class OylApiClient {
      * @param offerId - The offer Id to query.
      */
     getOkxOfferPsbt({ offerId, rune }: {
-        offerId: number;
+        offerId: number | number[];
         rune?: boolean;
     }): Promise<any>;
     /**

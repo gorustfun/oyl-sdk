@@ -15,10 +15,11 @@ export function genBrcAndOrdinalUnsignedPsbt({
     orderPrice,
     sellerPsbt,
     feeRate,
-    receiveAddress
+    receiveAddress,
+    nOffers
 }: GenOkxBrcAndCollectibleUnsignedPsbt
 ): string {
-    const data = buildDummyAndPaymentUtxos({ utxos, feeRate, orderPrice, address, receiveAddress, sellerPsbt }) as any
+    const data = buildDummyAndPaymentUtxos({ utxos, feeRate, orderPrice, address, receiveAddress, sellerPsbt, nOffers }) as any
 
     const buyingData: BuyingData = data
     const buyerPsbt = generateUnsignedBuyingPsbt(
@@ -39,14 +40,14 @@ export function mergeSignedPsbt(signedBuyerPsbt: string, sellerPsbt: string[]): 
 
 
 
-export function buildDummyAndPaymentUtxos({ utxos, feeRate, orderPrice, address, receiveAddress, sellerPsbt }: PaymentUtxoOptions) {
+export function buildDummyAndPaymentUtxos({ utxos, feeRate, orderPrice, address, receiveAddress, sellerPsbt, nOffers }: PaymentUtxoOptions) {
     const allUtxosWorth600 = getAllUTXOsWorthASpecificValue(utxos, 600)
-    if (allUtxosWorth600.length < 2) {
+    if (allUtxosWorth600.length < nOffers + 1) {
         throw new Error('not enough padding utxos (600 sat) for marketplace buy')
     }
 
     const dummyUtxos = []
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < nOffers + 1; i++) {
         dummyUtxos.push({
             txHash: allUtxosWorth600[i].txId,
             vout: allUtxosWorth600[i].outputIndex,

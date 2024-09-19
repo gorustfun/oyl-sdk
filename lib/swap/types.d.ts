@@ -27,6 +27,7 @@ export interface DummyUtxoOptions {
     pubKey: string;
     network: bitcoin.Network;
     addressType: AddressType;
+    nDummyUtxos: number;
 }
 export interface PaymentUtxoOptions {
     utxos: FormattedUtxo[];
@@ -35,6 +36,7 @@ export interface PaymentUtxoOptions {
     address: string;
     receiveAddress: string;
     sellerPsbt: string;
+    nOffers: number;
 }
 export interface PrepareAddressForDummyUtxos {
     address: string;
@@ -43,6 +45,7 @@ export interface PrepareAddressForDummyUtxos {
     pubKey: string;
     utxos?: FormattedUtxo[];
     addressType: AddressType;
+    nOffers?: number;
 }
 export interface SignedOkxBid {
     fromAddress: string;
@@ -66,6 +69,7 @@ export interface GenOkxBrcAndCollectibleUnsignedPsbt {
     addressType: AddressType;
     sellerPsbt: string;
     orderPrice: number;
+    nOffers: number;
 }
 export interface GenOkxRuneUnsignedPsbt {
     address: string;
@@ -75,9 +79,9 @@ export interface GenOkxRuneUnsignedPsbt {
     receiveAddress: string;
     network: bitcoin.Network;
     pubKey: string;
-    addressType: AddressType;
+    addressType?: AddressType;
     sellerPsbt: string;
-    sellerAddress: string;
+    sellerAddress?: string;
     orderPrice: number;
 }
 export interface UnsignedPsbt {
@@ -91,9 +95,10 @@ export interface UnsignedPsbt {
     signer?: Signer;
     decodedPsbt?: any;
     sellerPsbt: string;
-    orderPrice: number;
+    orderPrice?: number;
     sellerAddress?: string;
     assetType: AssetType;
+    nOffers?: number;
 }
 export interface SelectSpendAddress {
     offers: MarketplaceOffer[];

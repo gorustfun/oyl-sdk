@@ -1,6 +1,6 @@
 import { OylTransactionError, getAddressType, timeout } from "../.."
 import { AssetType } from "../../shared/interface"
-import { UnsignedOkxBid, SignedOkxBid, UnsignedPsbt, GenOkxRuneUnsignedPsbt, ProcessOfferOptions, SwapResponse, MarketplaceOffer } from "../types"
+import { UnsignedOkxBid, SignedOkxBid, UnsignedPsbt, GenOkxRuneUnsignedPsbt, ProcessOfferOptions, SwapResponse, MarketplaceOffer, GenOkxBrcAndCollectibleUnsignedPsbt } from "../types"
 import { genBrcAndOrdinalUnsignedPsbt, mergeSignedPsbt } from "./nft"
 import { prepareAddressForDummyUtxos, updateUtxos } from "../helpers";
 import { buildOkxRunesPsbt } from "./runes";
@@ -67,11 +67,11 @@ export async function submitSignedPsbt(signedBid: SignedOkxBid) {
 export async function getBuyerPsbt(unsignedPsbt: UnsignedPsbt) {
     switch (unsignedPsbt.assetType) {
         case AssetType.BRC20:
-            return genBrcAndOrdinalUnsignedPsbt(unsignedPsbt)
+            return genBrcAndOrdinalUnsignedPsbt(unsignedPsbt as GenOkxBrcAndCollectibleUnsignedPsbt)
         case AssetType.RUNES:
             return await buildOkxRunesPsbt(unsignedPsbt as GenOkxRuneUnsignedPsbt)
         case AssetType.COLLECTIBLE:
-            return genBrcAndOrdinalUnsignedPsbt(unsignedPsbt)
+            return genBrcAndOrdinalUnsignedPsbt(unsignedPsbt as GenOkxBrcAndCollectibleUnsignedPsbt)
             
     }
 }
@@ -94,13 +94,14 @@ export async function okxSwap ({
     let dummyTxId: string | null = null;
     let purchaseTxId: string | null = null;
     const addressType = getAddressType(address);
+    const nOffers = Array.isArray(offer.offerId) ? offer.offerId.length : 1
 
     const network = provider.network
 
     const psbtForDummyUtxos =
     (assetType != AssetType.RUNES) 
     ?
-    await prepareAddressForDummyUtxos({address, utxos, network, pubKey, feeRate, addressType})
+    await prepareAddressForDummyUtxos({address, utxos, network, pubKey, feeRate, addressType, nOffers})
     :
     null
     if (psbtForDummyUtxos != null){
@@ -120,6 +121,7 @@ export async function okxSwap ({
             provider    
         })
     }
+
     const unsignedBid: UnsignedOkxBid = {
         offerId: offer.offerId,
         provider,
@@ -127,48 +129,70 @@ export async function okxSwap ({
     }
     
     const sellerData = await getSellerPsbt(unsignedBid);
+
     const sellerPsbt = sellerData.data.sellerPsbt;
-    const decodedPsbt = await provider.sandshrew.bitcoindRpc.decodePSBT(sellerPsbt)
-    const sellerAddress = offer?.address
-    const buyerPsbt = await getBuyerPsbt({
+    const buyerPsbtPayload = {
         address,
         utxos,
         feeRate,
         receiveAddress,
         network,
         pubKey,
-        addressType,
         sellerPsbt,
-        sellerAddress: sellerAddress as string,
-        orderPrice: offer.totalPrice as number,
         assetType,
-        decodedPsbt
-    })
+        addressType
+    }
 
+    let buyerPsbt: string
+    let finalPsbt: string
 
-   const {signedPsbt} = await signer.signAllInputs({
+    if (assetType === AssetType.RUNES) {
+     buyerPsbtPayload["decodedPsbt"] = await provider.sandshrew.bitcoindRpc.decodePSBT(sellerPsbt)
+     buyerPsbtPayload["sellerAddress"] = offer?.address as string
+     buyerPsbtPayload["addressType"] = addressType
+     buyerPsbtPayload["assetType"] = assetType
+     buyerPsbtPayload["orderPrice"] = offer.totalPrice as number
+    buyerPsbt = await getBuyerPsbt(buyerPsbtPayload)
+    const {signedPsbt} = await signer.signAllInputs({
         rawPsbt: buyerPsbt,
         finalize: false
     })
-    let finalPsbt = signedPsbt
-    if (assetType != AssetType.RUNES) finalPsbt = mergeSignedPsbt(signedPsbt, [sellerPsbt]) 
-    const transaction = await submitSignedPsbt({
-        fromAddress: address,
-        psbt: finalPsbt,
-        assetType,
-        provider,
-        offer: offer as MarketplaceOffer
-    })
-    
-    if (transaction?.statusCode == 200 || transaction?.data){
-
-        purchaseTxId = transaction.data
-        return {
-            dummyTxId,
-            purchaseTxId
-        }
+    finalPsbt = signedPsbt
     } else {
-        throw new OylTransactionError (new Error(JSON.stringify(transaction)))
+        buyerPsbtPayload["nOffers"] = nOffers
+        buyerPsbtPayload["orderPrice"] = Array.isArray(offer.totalPrice) 
+            ? offer.totalPrice.reduce((sum, price) => sum + price, 0) 
+            : offer.totalPrice
+        buyerPsbt = await getBuyerPsbt(buyerPsbtPayload)
+        const {signedPsbt} = await signer.signAllInputs({
+            rawPsbt: buyerPsbt,
+            finalize: false
+        })
+        finalPsbt = mergeSignedPsbt(signedPsbt, sellerPsbt)
+    }
+   console.log(finalPsbt)
+
+    // const transaction = await submitSignedPsbt({
+    //     fromAddress: address,
+    //     psbt: finalPsbt,
+    //     assetType,
+    //     provider,
+    //     offer: offer as MarketplaceOffer
+    // })
+    
+    // if (transaction?.statusCode == 200 || transaction?.data){
+
+    //     purchaseTxId = transaction.data
+    //     return {
+    //         dummyTxId,
+    //         purchaseTxId
+    //     }
+    // } else {
+    //     throw new OylTransactionError (new Error(JSON.stringify(transaction)))
+    // }
+    return {
+        dummyTxId,
+        purchaseTxId
     }
 
 }

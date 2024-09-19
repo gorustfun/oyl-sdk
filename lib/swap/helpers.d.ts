@@ -8,7 +8,7 @@ export declare const maxTxSizeForOffers: number;
 export declare const CONFIRMED_UTXO_ENFORCED_MARKETPLACES: Marketplaces[];
 export declare const DUMMY_UTXO_ENFORCED_MARKETPLACES: Marketplaces[];
 export declare const ESTIMATE_TX_SIZE: number;
-export declare const DUMMY_UTXO_SATS: number;
+export declare const DUMMY_UTXO_SATS = 600;
 export declare function getUTXOsToCoverAmount({ utxos, amountNeeded, excludedUtxos, insistConfirmedUtxos }: UtxosToCoverAmount): FormattedUtxo[];
 export declare function isExcludedUtxo(utxo: FormattedUtxo, excludedUtxos: FormattedUtxo[]): Boolean;
 export declare function getAllUTXOsWorthASpecificValue(utxos: FormattedUtxo[], value: number): FormattedUtxo[];
@@ -24,8 +24,8 @@ export declare function canAddressAffordBid({ address, estimatedCost, offers, pr
 export declare function calculateAmountGathered(utxoArray: FormattedUtxo[]): number;
 export declare function selectSpendAddress({ offers, provider, feeRate, account }: SelectSpendAddress): Promise<SelectSpendAddressResponse>;
 export declare function sanitizeFeeRate(provider: Provider, feeRate: number): Promise<number>;
-export declare function prepareAddressForDummyUtxos({ address, network, pubKey, feeRate, addressType, utxos }: PrepareAddressForDummyUtxos): Promise<BuiltPsbt | null>;
-export declare function dummyUtxosPsbt({ address, utxos, feeRate, pubKey, addressType, network }: DummyUtxoOptions): BuiltPsbt;
+export declare function prepareAddressForDummyUtxos({ address, network, pubKey, feeRate, addressType, utxos, nOffers }: PrepareAddressForDummyUtxos): Promise<BuiltPsbt | null>;
+export declare function dummyUtxosPsbt({ address, utxos, feeRate, pubKey, addressType, network, nDummyUtxos }: DummyUtxoOptions): BuiltPsbt;
 export declare function updateUtxos({ originalUtxos, txId, spendAddress, provider }: {
     originalUtxos: FormattedUtxo[];
     txId: string;
