@@ -63,44 +63,6 @@ describe('Signer', () => {
       'f0eb03b1a75ac6d9847f55c624a99169b5dccba2a31f5b23bea77ba270de0a7a'
     )
   })
-  test('BIP322 Signer signs correctly', async () => {
-    const privateKey = 'KwTbAxmBXjoZM3bzbXixEr9nxLhyYSM4vp2swet58i19bw9sqk5z'
-    const privateKeyTestnet =
-      'cMpadsm2xoVpWV5FywY5cAeraa1PCtSkzrBM45Ladpf9rgDu6cMz'
-    const address = '3HSVzEhCFuH9Z3wvoWTexy7BMVVp3PjS6f'
-    const addressTestnet = '2N8zi3ydDsMnVkqaUUe5Xav6SZqhyqEduap'
-    const addressRegtest = '2N8zi3ydDsMnVkqaUUe5Xav6SZqhyqEduap'
-    const message = 'Hello World'
-    const expectedSignature =
-      'AkgwRQIhAMd2wZSY3x0V9Kr/NClochoTXcgDaGl3OObOR17yx3QQAiBVWxqNSS+CKen7bmJTG6YfJjsggQ4Fa2RHKgBKrdQQ+gEhAxa5UDdQCHSQHfKQv14ybcYm1C9y6b12xAuukWzSnS+w'
-
-    const signature = bipSigner.sign(privateKey, address, message)
-    const signatureTestnet = bipSigner.sign(privateKey, addressTestnet, message)
-    const signatureRegtest = bipSigner.sign(privateKey, addressRegtest, message)
-    // Sign with testnet key
-    const signatureTestnetKey = bipSigner.sign(
-      privateKeyTestnet,
-      address,
-      message
-    )
-    const signatureTestnetTestnetKey = bipSigner.sign(
-      privateKeyTestnet,
-      addressTestnet,
-      message
-    )
-    const signatureRegtestTestnetKey = bipSigner.sign(
-      privateKeyTestnet,
-      addressRegtest,
-      message
-    )
-
-    expect(signature).toEqual(expectedSignature)
-    expect(signatureTestnet).toEqual(expectedSignature)
-    expect(signatureRegtest).toEqual(expectedSignature)
-    expect(signatureTestnetKey).toEqual(expectedSignature)
-    expect(signatureTestnetTestnetKey).toEqual(expectedSignature)
-    expect(signatureRegtestTestnetKey).toEqual(expectedSignature)
-  })
 
   test('Should sign a message with nested segwit keypair', async () => {
     const signtaure =

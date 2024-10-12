@@ -732,9 +732,9 @@
   integrity sha512-Vvn3zZrhQZkkBE8LSuW3em98c0FwgO4nxzv6OdSxPKJIEKY2bGbHn+mhGIPerzI4twdxaP8/0+06HBpwf345Lw==
 
 "@sadoprotocol/ordit-sdk@^2.2.4":
-  version "2.3.15"
-  resolved "https://registry.npmjs.org/@sadoprotocol/ordit-sdk/-/ordit-sdk-2.3.15.tgz"
-  integrity sha512-R/KFHlMXu6nNdPOj84h/zfVpeFDIPcaqJnRdhy+Xm8l8BjlEklFg3sQSUeRfg42XEEgmGdDzRhn1MGZWDt3YJA==
+  version "2.7.3"
+  resolved "https://registry.npmjs.org/@sadoprotocol/ordit-sdk/-/ordit-sdk-2.7.3.tgz#8806fe90a76d5e2bd317e6c35b98f92c301f027b"
+  integrity sha512-/zjhFhxv3IunFWs9I3gZkyr1QXOz1ERDBCgsLqM5v5IP9GiwCmMbX29YHBJyYdSp86im4xUyHLoMxSrPiVYz6g==
   dependencies:
     "@bitcoinerlab/secp256k1" "^1.0.5"
     bip32 "^4.0.0"

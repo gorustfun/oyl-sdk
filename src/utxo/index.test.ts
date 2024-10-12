@@ -18,8 +18,7 @@ const testFormattedUtxos: FormattedUtxo[] = [
     outputIndex: 2,
     satoshis: 100000,
     confirmations: 3,
-    scriptPk:
-      'b7fbbedbe61b51bf4e41e3517b8232f31c64f3b67ffd2d8eecff12fc7db4cae5',
+    scriptPk: '0014c0cebcd6c3d3ca8c75dc5ec62ebe55330ef910e2',
     address: 'bc1pklamaklxrdgm7njpudghhq3j7vwxfuak0l7jmrhvluf0cld5etjsga00nj',
     inscriptions: [],
   },
@@ -91,7 +90,7 @@ const testOrdTxOutputs = [
     address: 'bc1pklamaklxrdgm7njpudghhq3j7vwxfuak0l7jmrhvluf0cld5etjsga00nj',
     indexed: true,
     inscriptions: [],
-    runes: [],
+    runes: {},
     sat_ranges: [[1956902243257152, 1956902243257698]],
     script_pubkey:
       'OP_PUSHNUM_1 OP_PUSHBYTES_32 b7fbbedbe61b51bf4e41e3517b8232f31c64f3b67ffd2d8eecff12fc7db4cae5',
@@ -104,7 +103,7 @@ const testOrdTxOutputs = [
     address: 'bc1pklamaklxrdgm7njpudghhq3j7vwxfuak0l7jmrhvluf0cld5etjsga00nj',
     indexed: true,
     inscriptions: [],
-    runes: [],
+    runes: {},
     sat_ranges: [[1956902243257152, 1956902243257698]],
     script_pubkey:
       'OP_PUSHNUM_1 OP_PUSHBYTES_32 b7fbbedbe61b51bf4e41e3517b8232f31c64f3b67ffd2d8eecff12fc7db4cae5',
@@ -119,7 +118,7 @@ const testOrdTxOutputs = [
     inscriptions: [
       'e605df4731c8773902dd6f56bfbec815db26d530da00dbdc697e35a992269987i0',
     ],
-    runes: [],
+    runes: {},
     sat_ranges: [[1956902243257152, 1956902243257698]],
     script_pubkey:
       'OP_PUSHNUM_1 OP_PUSHBYTES_32 b7fbbedbe61b51bf4e41e3517b8232f31c64f3b67ffd2d8eecff12fc7db4cae5',
@@ -132,9 +131,7 @@ const testOrdTxOutputs = [
     address: 'bc1pklamaklxrdgm7njpudghhq3j7vwxfuak0l7jmrhvluf0cld5etjsga00nj',
     indexed: true,
     inscriptions: [],
-    runes: [
-      'e605df4731c8773902dd6f56bfbec815db26d530da00dbdc697e35a992269987i0',
-    ],
+    runes: { rune: 'dummy' },
     sat_ranges: [[1956902243257152, 1956902243257698]],
     script_pubkey:
       'OP_PUSHNUM_1 OP_PUSHBYTES_32 b7fbbedbe61b51bf4e41e3517b8232f31c64f3b67ffd2d8eecff12fc7db4cae5',
@@ -182,6 +179,14 @@ const testEsploraTxInfo = [
         scriptpubkey_address:
           'bc1pklamaklxrdgm7njpudghhq3j7vwxfuak0l7jmrhvluf0cld5etjsga00nj',
         value: 100000,
+      },
+      {
+        scriptpubkey: '3014c0cebcd6c3d3ca8c75dc5ec62ebe55330ef919f4',
+        scriptpubkey_asm:
+          'OP_0 OP_PUSHBYTES_20 c0cebcd6c3d3ca8c75dc5ec62ebe55330ef910e2',
+        scriptpubkey_type: 'v0_p2wpkh',
+        scriptpubkey_address: 'bcrt1qcr8te4kr609gcawutmrza0j4xv80jy8zeqchgx',
+        value: 200000,
       },
       {
         scriptpubkey: '0014c0cebcd6c3d3ca8c75dc5ec62ebe55330ef910e2',
@@ -386,12 +391,6 @@ const mockOrdTxOutputs = jest
   .mockResolvedValueOnce(testOrdTxOutputs[1])
   .mockResolvedValueOnce(testOrdTxOutputs[2])
   .mockResolvedValueOnce(testOrdTxOutputs[3])
-const mockRuneOutputs = jest
-  .fn()
-  .mockResolvedValueOnce(testOrdTxOutputs[0])
-  .mockResolvedValueOnce(testOrdTxOutputs[1])
-  .mockResolvedValueOnce(testOrdTxOutputs[2])
-  .mockResolvedValueOnce(testOrdTxOutputs[3])
 const mockEsploraTxInfo = jest
   .fn()
   .mockResolvedValueOnce(testEsploraTxInfo[0])
@@ -413,9 +412,6 @@ jest.mock('../provider/provider', () => {
       },
       ord: {
         getTxOutput: () => mockOrdTxOutputs(),
-      },
-      api: {
-        getOutputRune: () => mockRuneOutputs(),
       },
     })),
   }

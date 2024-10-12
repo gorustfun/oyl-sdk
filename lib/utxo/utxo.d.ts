@@ -45,15 +45,6 @@ export declare const addressBalance: ({ address, provider, }: {
     pendingAmount: number;
     amount: number;
 }>;
-export declare const addressSpendableUtxos: ({ address, provider, spendAmount, spendStrategy, }: {
-    address: string;
-    provider: Provider;
-    spendAmount?: number;
-    spendStrategy?: SpendStrategy;
-}) => Promise<{
-    totalAmount: number;
-    utxos: FormattedUtxo[];
-}>;
 export declare const accountSpendableUtxos: ({ account, provider, spendAmount, }: {
     account: Account;
     provider: Provider;
