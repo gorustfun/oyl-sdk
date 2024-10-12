@@ -4,8 +4,7 @@ import * as bitcoin from 'bitcoinjs-lib'
 import { FormattedUtxo, accountSpendableUtxos } from '../utxo/utxo'
 import { Account } from '../account/account'
 import {
-  createRuneEtchScript,
-  createRuneMintScript,
+  createInscriptionScript,
   createRuneSendScript,
   formatInputsToSign,
   inscriptionSats,
@@ -17,23 +16,34 @@ import { Signer } from '../signer'
 import { encodeRunestone, RunestoneSpec } from '@magiceden-oss/runestone-lib'
 
 
-export const createRuneMintScript2 = ({
-  runeId,
-  pointer = 1,
-}: {
-  runeId: string
-  pointer?: number
-}) => {
-  const [blockStr, txStr] = runeId.split(':');
-  const runestone: RunestoneSpec = {
-    mint: {
-      block: BigInt(blockStr),
-      tx: parseInt(txStr, 10),
-    },
-    pointer
+export function runeFromStr(s) {
+  let x = 0n; // Use BigInt for handling large numbers equivalent to u128 in Rust.
+  for (let i = 0; i < s.length; i++) {
+    const c = s[i];
+    if (i > 0) {
+      x += 1n;
+    }
+    x *= 26n; // Multiply by 26 at each step to shift left in base 26.
+
+    // Convert character to a number (0-25) and add it to x.
+    const charCode = c.charCodeAt(0);
+    if (charCode >= 65 && charCode <= 90) { // 'A'.charCodeAt(0) is 65, 'Z'.charCodeAt(0) is 90
+      x += BigInt(charCode - 65);
+    } else {
+      throw new Error(`Invalid character in rune name: ${c}`);
+    }
   }
-  return encodeRunestone(runestone);
+  return x;
 }
+
+export function hexToLittleEndian(hex) {
+  let littleEndianHex = '';
+  for (let i = hex.length - 2; i >= 0; i -= 2) {
+      littleEndianHex += hex.substr(i, 2);
+  }
+  return littleEndianHex;
+}
+
 
 export const createSendPsbt = async ({
   account,
@@ -241,18 +251,34 @@ export const createSendPsbt = async ({
   }
 }
 
+export const createRuneMintScript = ({
+  runeId,
+  pointer = 1,
+}: {
+  runeId: string
+  pointer?: number
+}) => {
+  const [blockStr, txStr] = runeId.split(':');
+  const runestone: RunestoneSpec = {
+    mint: {
+      block: BigInt(blockStr),
+      tx: parseInt(txStr, 10),
+    },
+    pointer
+  }
+  return encodeRunestone(runestone);
+}
+
 export const createMintPsbt = async ({
   account,
   runeId,
   provider,
-  amount,
   feeRate,
   fee,
 }: {
   account: Account
   runeId: string
   provider: Provider
-  amount: number
   feeRate?: number
   fee?: number
 }) => {
@@ -358,19 +384,15 @@ export const createMintPsbt = async ({
       value: changeAmount,
     })
 
-    const minstScript = createRuneMintScript2({
+    const minstScript = createRuneMintScript({
       runeId,
       pointer: 0,
-    })
-    console.log('mintscript: ', minstScript)
+    }).encodedRunestone
 
-    const script = createRuneMintScript({
-      runeId,
-      mintOutPutIndex: 0,
-      pointer: 0,
+    psbt.addOutput({ 
+      script: minstScript, 
+      value: 0 
     })
-    const output = { script: script, value: 0 }
-    psbt.addOutput(output)
 
     const formattedPsbtTx = await formatInputsToSign({
       _psbt: psbt,
@@ -384,28 +406,192 @@ export const createMintPsbt = async ({
   }
 }
 
-export const createEtchPsbt = async ({
+export const createEtchCommitPsbt = async ({
+  runestone,
   account,
-  symbol,
-  cap,
-  premine,
-  perMintAmount,
-  turbo,
-  divisibility,
-  runeName,
   provider,
   feeRate,
   fee,
 }: {
+  runestone: RunestoneSpec
   account: Account
   provider: Provider
-  symbol: string
-  cap?: number
-  premine?: number
-  perMintAmount: number
-  turbo?: boolean
-  divisibility?: number
-  runeName: string
+  feeRate?: number
+  fee?: number
+}) => {
+  try {
+    const minFee = minimumFee({
+      taprootInputCount: 2,
+      nonTaprootInputCount: 0,
+      outputCount: 2,
+    })
+    const calculatedFee = minFee * feeRate < 250 ? 250 : minFee * feeRate
+    let finalFee = fee ? fee : calculatedFee
+
+    let gatheredUtxos: {
+      totalAmount: number
+      utxos: FormattedUtxo[]
+    } = await accountSpendableUtxos({
+      account,
+      provider,
+      spendAmount: finalFee + inscriptionSats,
+    })
+
+    let psbt = new bitcoin.Psbt({ network: provider.network })
+
+    if (!fee && gatheredUtxos.utxos.length > 1) {
+      const txSize = minimumFee({
+        taprootInputCount: gatheredUtxos.utxos.length,
+        nonTaprootInputCount: 0,
+        outputCount: 2,
+      })
+      finalFee = txSize * feeRate < 250 ? 250 : txSize * feeRate
+
+      if (gatheredUtxos.totalAmount < finalFee) {
+        gatheredUtxos = await accountSpendableUtxos({
+          account,
+          provider,
+          spendAmount: finalFee + inscriptionSats,
+        })
+      }
+    }
+
+    for (let i = 0; i < gatheredUtxos.utxos.length; i++) {
+      if (getAddressType(gatheredUtxos.utxos[i].address) === 0) {
+        const previousTxHex: string = await provider.esplora.getTxHex(
+          gatheredUtxos.utxos[i].txId
+        )
+        psbt.addInput({
+          hash: gatheredUtxos.utxos[i].txId,
+          index: gatheredUtxos.utxos[i].outputIndex,
+          nonWitnessUtxo: Buffer.from(previousTxHex, 'hex'),
+        })
+      }
+      if (getAddressType(gatheredUtxos.utxos[i].address) === 2) {
+        const redeemScript = bitcoin.script.compile([
+          bitcoin.opcodes.OP_0,
+          bitcoin.crypto.hash160(
+            Buffer.from(account.nestedSegwit.pubkey, 'hex')
+          ),
+        ])
+
+        psbt.addInput({
+          hash: gatheredUtxos.utxos[i].txId,
+          index: gatheredUtxos.utxos[i].outputIndex,
+          redeemScript: redeemScript,
+          witnessUtxo: {
+            value: gatheredUtxos.utxos[i].satoshis,
+            script: bitcoin.script.compile([
+              bitcoin.opcodes.OP_HASH160,
+              bitcoin.crypto.hash160(redeemScript),
+              bitcoin.opcodes.OP_EQUAL,
+            ]),
+          },
+        })
+      }
+      if (
+        getAddressType(gatheredUtxos.utxos[i].address) === 1 ||
+        getAddressType(gatheredUtxos.utxos[i].address) === 3
+      ) {
+        psbt.addInput({
+          hash: gatheredUtxos.utxos[i].txId,
+          index: gatheredUtxos.utxos[i].outputIndex,
+          witnessUtxo: {
+            value: gatheredUtxos.utxos[i].satoshis,
+            script: Buffer.from(gatheredUtxos.utxos[i].scriptPk, 'hex'),
+          },
+        })
+      }
+    }
+
+    if (gatheredUtxos.totalAmount < finalFee + inscriptionSats) {
+      throw new OylTransactionError(Error('Insufficient Balance'))
+    }
+
+
+
+
+    // EB - Send to tapscript
+    const etchScript = encodeRunestone(runestone).encodedRunestone
+
+    psbt.addOutput({ 
+      script: etchScript, 
+      value: 0 
+    })
+    psbt.addOutput({
+      value: inscriptionSats,
+      address: account.taproot.address,
+    })
+
+
+    const runeName = runestone.etching.runeName.replace('•','')
+    let runeNameHex = runeFromStr(runeName).toString(16)
+    if (runeNameHex.length % 2 !== 0) {
+      runeNameHex = '0' + runeNameHex
+    }
+
+    const runeNameLittleEndian = hexToLittleEndian(runeNameHex)
+    const runeNameLittleEndianUint8 = Uint8Array.from(Buffer.from(runeNameLittleEndian, 'hex'))
+
+    let script = []
+    script.push(
+      pubkeyXOnly, 
+      'OP_CHECKSIG', 
+      'OP_0', 
+      'OP_IF', 
+      runeNameLittleEndianUint8,
+      'OP_ENDIF' 
+    )
+
+    const outputScript = bitcoin.script.compile(script)
+
+    const inscriberInfo = bitcoin.payments.p2tr({
+      internalPubkey: tweakedTaprootPublicKey,
+      scriptTree: { output: outputScript },
+      network: provider.network,
+    })
+
+    psbt.addOutput({
+      value: Number(feeForReveal) + 546,
+      address: inscriberInfo.address,
+    })
+
+
+
+
+
+
+    const changeAmount =
+      gatheredUtxos.totalAmount - (finalFee + inscriptionSats)
+
+    psbt.addOutput({
+      address: account[account.spendStrategy.changeAddress].address,
+      value: changeAmount,
+    })
+
+    const formattedPsbtTx = await formatInputsToSign({
+      _psbt: psbt,
+      senderPublicKey: account.taproot.pubkey,
+      network: provider.network,
+    })
+
+    return { psbt: formattedPsbtTx.toBase64() }
+  } catch (error) {
+    throw new OylTransactionError(error)
+  }
+}
+
+
+export const createEtchRevealPsbt = async ({
+  runestone,
+  account,
+  provider,
+  feeRate,
+  fee,
+}: {
+  runestone: RunestoneSpec
+  account: Account
+  provider: Provider
   feeRate?: number
   fee?: number
 }) => {
@@ -511,18 +697,12 @@ export const createEtchPsbt = async ({
       value: changeAmount,
     })
 
-    const script = createRuneEtchScript({
-      symbol,
-      cap,
-      premine,
-      perMintAmount,
-      turbo,
-      divisibility,
-      runeName,
-      pointer: 0,
+    const etchScript = encodeRunestone(runestone).encodedRunestone
+
+    psbt.addOutput({ 
+      script: etchScript, 
+      value: 0 
     })
-    const output = { script: script, value: 0 }
-    psbt.addOutput(output)
 
     const formattedPsbtTx = await formatInputsToSign({
       _psbt: psbt,
@@ -701,14 +881,12 @@ export const actualMintFee = async ({
   account,
   runeId,
   provider,
-  amount,
   feeRate,
   signer,
 }: {
   account: Account
   runeId: string
   provider: Provider
-  amount: number
   feeRate?: number
   signer: Signer
 }) => {
@@ -720,7 +898,6 @@ export const actualMintFee = async ({
     account,
     runeId,
     provider,
-    amount,
     feeRate,
   })
 
@@ -745,7 +922,6 @@ export const actualMintFee = async ({
     account,
     runeId,
     provider,
-    amount,
     feeRate,
     fee: correctFee,
   })
@@ -771,25 +947,13 @@ export const actualMintFee = async ({
 }
 
 export const actualEtchFee = async ({
+  runestone,
   account,
-  symbol,
-  cap,
-  premine,
-  perMintAmount,
-  turbo,
-  divisibility,
-  runeName,
   provider,
   feeRate,
   signer,
 }: {
-  symbol: string
-  cap?: number
-  premine?: number
-  perMintAmount: number
-  turbo?: boolean
-  divisibility?: number
-  runeName: string
+  runestone: RunestoneSpec
   account: Account
   provider: Provider
   feeRate?: number
@@ -799,14 +963,8 @@ export const actualEtchFee = async ({
     feeRate = (await provider.esplora.getFeeEstimates())['1']
   }
 
-  const { psbt } = await createEtchPsbt({
-    symbol,
-    cap,
-    premine,
-    perMintAmount,
-    turbo,
-    divisibility,
-    runeName,
+  const { psbt } = await createEtchCommitPsbt({
+    runestone,
     account,
     provider,
     feeRate,
@@ -829,14 +987,8 @@ export const actualEtchFee = async ({
 
   const correctFee = vsize * feeRate
 
-  const { psbt: finalPsbt } = await createEtchPsbt({
-    symbol,
-    cap,
-    premine,
-    perMintAmount,
-    turbo,
-    divisibility,
-    runeName,
+  const { psbt: finalPsbt } = await createEtchCommitPsbt({
+    runestone,
     account,
     provider,
     feeRate,
@@ -923,21 +1075,18 @@ export const mint = async ({
   account,
   runeId,
   provider,
-  amount,
   feeRate,
   signer,
 }: {
   account: Account
   runeId: string
   provider: Provider
-  amount: number
   feeRate?: number
   signer: Signer
 }) => {
   const { fee } = await actualMintFee({
     account,
     runeId,
-    amount,
     provider,
     feeRate,
     signer,
@@ -946,7 +1095,6 @@ export const mint = async ({
   const { psbt: finalPsbt } = await createMintPsbt({
     account,
     runeId,
-    amount,
     provider,
     feeRate,
     fee: fee,
@@ -965,52 +1113,28 @@ export const mint = async ({
 }
 
 export const etch = async ({
-  symbol,
-  cap,
-  premine,
-  perMintAmount,
-  turbo,
-  divisibility,
-  runeName,
+  runestone,
   account,
   provider,
   feeRate,
   signer,
 }: {
-  symbol: string
-  cap?: number
-  premine?: number
-  perMintAmount: number
-  turbo?: boolean
-  divisibility?: number
-  runeName: string
+  runestone: RunestoneSpec
   account: Account
   provider: Provider
   feeRate?: number
   signer: Signer
 }) => {
   const { fee } = await actualEtchFee({
-    symbol,
-    cap,
-    premine,
-    perMintAmount,
-    turbo,
-    divisibility,
-    runeName,
+    runestone,
     account,
     provider,
     feeRate,
     signer,
   })
 
-  const { psbt: finalPsbt } = await createEtchPsbt({
-    symbol,
-    cap,
-    premine,
-    perMintAmount,
-    turbo,
-    divisibility,
-    runeName,
+  const { psbt: finalPsbt } = await createEtchCommitPsbt({
+    runestone,
     account,
     provider,
     feeRate,
