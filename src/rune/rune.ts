@@ -533,28 +533,28 @@ export const createEtchCommitPsbt = async ({
     const runeNameLittleEndian = hexToLittleEndian(runeNameHex)
     const runeNameLittleEndianUint8 = Uint8Array.from(Buffer.from(runeNameLittleEndian, 'hex'))
 
-    let script = []
-    script.push(
-      pubkeyXOnly, 
-      'OP_CHECKSIG', 
-      'OP_0', 
-      'OP_IF', 
-      runeNameLittleEndianUint8,
-      'OP_ENDIF' 
-    )
+    // let script = []
+    // script.push(
+    //   pubkeyXOnly, 
+    //   'OP_CHECKSIG', 
+    //   'OP_0', 
+    //   'OP_IF', 
+    //   runeNameLittleEndianUint8,
+    //   'OP_ENDIF' 
+    // )
 
-    const outputScript = bitcoin.script.compile(script)
+    // const outputScript = bitcoin.script.compile(script)
 
-    const inscriberInfo = bitcoin.payments.p2tr({
-      internalPubkey: tweakedTaprootPublicKey,
-      scriptTree: { output: outputScript },
-      network: provider.network,
-    })
+    // const inscriberInfo = bitcoin.payments.p2tr({
+    //   internalPubkey: tweakedTaprootPublicKey,
+    //   scriptTree: { output: outputScript },
+    //   network: provider.network,
+    // })
 
-    psbt.addOutput({
-      value: Number(feeForReveal) + 546,
-      address: inscriberInfo.address,
-    })
+    // psbt.addOutput({
+    //   value: Number(feeForReveal) + 546,
+    //   address: inscriberInfo.address,
+    // })
 
 
 

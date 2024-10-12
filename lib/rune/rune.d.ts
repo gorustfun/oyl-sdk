@@ -3,13 +3,9 @@ import { Provider } from '../provider/provider';
 import { Account } from '../account/account';
 import { RuneUTXO } from '../shared/interface';
 import { Signer } from '../signer';
-export declare const createRuneMintScript2: ({ runeId, pointer, }: {
-    runeId: string;
-    pointer?: number;
-}) => {
-    encodedRunestone: Buffer;
-    etchingCommitment?: Buffer;
-};
+import { RunestoneSpec } from '@magiceden-oss/runestone-lib';
+export declare function runeFromStr(s: any): bigint;
+export declare function hexToLittleEndian(hex: any): string;
 export declare const createSendPsbt: ({ account, runeId, provider, inscriptionAddress, toAddress, amount, feeRate, fee, }: {
     account: Account;
     runeId: string;
@@ -22,26 +18,35 @@ export declare const createSendPsbt: ({ account, runeId, provider, inscriptionAd
 }) => Promise<{
     psbt: string;
 }>;
-export declare const createMintPsbt: ({ account, runeId, provider, amount, feeRate, fee, }: {
+export declare const createRuneMintScript: ({ runeId, pointer, }: {
+    runeId: string;
+    pointer?: number;
+}) => {
+    encodedRunestone: Buffer;
+    etchingCommitment?: Buffer;
+};
+export declare const createMintPsbt: ({ account, runeId, provider, feeRate, fee, }: {
     account: Account;
     runeId: string;
     provider: Provider;
-    amount: number;
     feeRate?: number;
     fee?: number;
 }) => Promise<{
     psbt: string;
 }>;
-export declare const createEtchPsbt: ({ account, symbol, cap, premine, perMintAmount, turbo, divisibility, runeName, provider, feeRate, fee, }: {
+export declare const createEtchCommitPsbt: ({ runestone, account, provider, feeRate, fee, }: {
+    runestone: RunestoneSpec;
     account: Account;
     provider: Provider;
-    symbol: string;
-    cap?: number;
-    premine?: number;
-    perMintAmount: number;
-    turbo?: boolean;
-    divisibility?: number;
-    runeName: string;
+    feeRate?: number;
+    fee?: number;
+}) => Promise<{
+    psbt: string;
+}>;
+export declare const createEtchRevealPsbt: ({ runestone, account, provider, feeRate, fee, }: {
+    runestone: RunestoneSpec;
+    account: Account;
+    provider: Provider;
     feeRate?: number;
     fee?: number;
 }) => Promise<{
@@ -70,24 +75,17 @@ export declare const actualSendFee: ({ account, runeId, provider, inscriptionAdd
 }) => Promise<{
     fee: number;
 }>;
-export declare const actualMintFee: ({ account, runeId, provider, amount, feeRate, signer, }: {
+export declare const actualMintFee: ({ account, runeId, provider, feeRate, signer, }: {
     account: Account;
     runeId: string;
     provider: Provider;
-    amount: number;
     feeRate?: number;
     signer: Signer;
 }) => Promise<{
     fee: number;
 }>;
-export declare const actualEtchFee: ({ account, symbol, cap, premine, perMintAmount, turbo, divisibility, runeName, provider, feeRate, signer, }: {
-    symbol: string;
-    cap?: number;
-    premine?: number;
-    perMintAmount: number;
-    turbo?: boolean;
-    divisibility?: number;
-    runeName: string;
+export declare const actualEtchFee: ({ runestone, account, provider, feeRate, signer, }: {
+    runestone: RunestoneSpec;
     account: Account;
     provider: Provider;
     feeRate?: number;
@@ -112,11 +110,10 @@ export declare const send: ({ toAddress, amount, runeId, inscriptionAddress, fee
     fee: number;
     satsPerVByte: string;
 }>;
-export declare const mint: ({ account, runeId, provider, amount, feeRate, signer, }: {
+export declare const mint: ({ account, runeId, provider, feeRate, signer, }: {
     account: Account;
     runeId: string;
     provider: Provider;
-    amount: number;
     feeRate?: number;
     signer: Signer;
 }) => Promise<{
@@ -127,14 +124,8 @@ export declare const mint: ({ account, runeId, provider, amount, feeRate, signer
     fee: number;
     satsPerVByte: string;
 }>;
-export declare const etch: ({ symbol, cap, premine, perMintAmount, turbo, divisibility, runeName, account, provider, feeRate, signer, }: {
-    symbol: string;
-    cap?: number;
-    premine?: number;
-    perMintAmount: number;
-    turbo?: boolean;
-    divisibility?: number;
-    runeName: string;
+export declare const etch: ({ runestone, account, provider, feeRate, signer, }: {
+    runestone: RunestoneSpec;
     account: Account;
     provider: Provider;
     feeRate?: number;
