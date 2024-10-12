@@ -1,4 +1,5 @@
 /// <reference types="node" />
+/// <reference types="node" />
 import { AddressType, AssetType } from "../shared/interface";
 import { FormattedUtxo } from '../utxo/utxo';
 import { Psbt } from 'bitcoinjs-lib';
