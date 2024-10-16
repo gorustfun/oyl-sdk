@@ -19,10 +19,6 @@
   "author": "Oyl Dynamics",
   "license": "MIT",
   "private": false,
-  "resolutions": {
-    "crypto-js": "^4.2.0",
-    "jsrsasign": "^11.0.0"
-  },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.5",
@@ -34,11 +30,9 @@
   },
   "dependencies": {
     "@bitcoinerlab/secp256k1": "^1.0.2",
-    "@cmdcode/crypto-utils": "^2.4.6",
-    "@cmdcode/tapscript": "^1.4.3",
     "@magiceden-oss/runestone-lib": "^1.0.2",
-    "@okxweb3/coin-bitcoin": "1.0.8-beta.12",
-    "@sadoprotocol/ordit-sdk": "^2.2.4",
+    "@okxweb3/coin-bitcoin": "1.0.28",
+    "@sadoprotocol/ordit-sdk": "^2.7.3",
     "@scure/base": "^1.1.6",
     "@scure/btc-signer": "^1.2.2",
     "bignumber.js": "^9.1.1",
@@ -52,7 +46,6 @@
     "bitcore-mnemonic": "^10.0.5",
     "change-case": "^4.1.2",
     "commander": "^12.1.0",
-    "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "ecpair": "^2.1.0",
     "fs-extra": "^11.1.1",
