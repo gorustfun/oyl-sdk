@@ -52,7 +52,7 @@ function getInputsAndOutputsForBuyerUtxos(
 
 
 
-function getUnisatOrdinalsOfferFees(
+export function getUnisatOrdinalsOfferFees(
     offer: MarketplaceOffer | MarketplaceBatchOffer,
     paymentAddress: string,
     receiveAddress: string,

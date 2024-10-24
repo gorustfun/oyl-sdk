@@ -6,4 +6,5 @@ export * as magisat from './magisat'
 export * as swap from './swap'
 export * as helpers from './helpers'
 export * as types from './types'
+export * as estimator from './estimator'
 
