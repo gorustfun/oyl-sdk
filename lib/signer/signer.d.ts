@@ -60,6 +60,7 @@ export declare class Signer {
         signedPsbt: string;
         signedHexPsbt: string;
     }>;
+    hashMessage(message: string): Promise<string>;
     signMessage({ message, address, keypair, protocol, }: {
         message: string;
         address?: string;

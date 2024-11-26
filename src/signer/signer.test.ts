@@ -3,7 +3,6 @@ import { Signer, walletInit } from './signer'
 import { BIP322, Verifier, Signer as bipSigner } from 'bip322-js'
 import { ECPair } from '../shared/utils'
 import { toXOnly } from 'bitcoinjs-lib/src/psbt/bip371'
-import crypto from 'crypto'
 
 describe('Signer', () => {
   const network = bitcoin.networks.bitcoin
@@ -20,11 +19,7 @@ describe('Signer', () => {
   }
 
   const message = 'Hello World'
-  const hashedMessage = crypto
-    .createHash('sha256')
-    .update(message)
-    .digest()
-    .toString('base64')
+  const hashedMessage = 'pZGm1Av0IEBKARczz7exkNYsZb8LzaMrV7J32a2fFG4='
 
   test('should initialize the Signer class with segwit, taproot, legacy, and nested segwit keys', () => {
     const signer = new Signer(network, keys)
