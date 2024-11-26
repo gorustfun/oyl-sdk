@@ -1,8 +1,6 @@
 import { MnemonicToAccountOptions } from '..'
-import { Provider, ProviderConstructorArgs } from '..'
+import { ProviderConstructorArgs } from '..'
 import * as bitcoin from 'bitcoinjs-lib'
-import * as dotenv from 'dotenv'
-dotenv.config()
 
 export const UTXO_DUST = 546
 
@@ -32,9 +30,6 @@ export const Opts: MnemonicToAccountOptions = {
     utxoSortGreatestToLeast: true,
   },
 }
-
-export const regtestMnemonic: string = process.env.REGTEST1
-export const mainnetMnemonic: string = process.env.MAINNET_MNEMONIC
 
 export const getBrc20Data = ({
   amount,

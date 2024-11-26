@@ -4,8 +4,6 @@ import { BIP32Factory } from 'bip32'
 const bip32 = BIP32Factory(ecc)
 import * as bip39 from 'bip39'
 bitcoin.initEccLib(ecc)
-import * as dotenv from 'dotenv'
-dotenv.config()
 
 export type Account = {
   taproot: {
