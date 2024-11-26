@@ -27,15 +27,13 @@
     "@types/jest": "^29.5.12",
     "@types/node": "^20.14.5",
     "@types/tiny-async-pool": "^2.0.3",
-    "@types/yargs": "^17.0.32",
     "jest": "^29.7.0",
     "ts-jest": "^29.1.4",
+    "ts-node": "^10.9.2",
     "typescript": "^4.8.4"
   },
   "dependencies": {
     "@bitcoinerlab/secp256k1": "^1.0.2",
-    "@cmdcode/crypto-utils": "^2.4.6",
-    "@cmdcode/tapscript": "^1.4.3",
     "@magiceden-oss/runestone-lib": "^1.0.2",
     "@okxweb3/coin-bitcoin": "1.0.8-beta.12",
     "@sadoprotocol/ordit-sdk": "^2.2.4",
@@ -48,25 +46,14 @@
     "bitcoin-address-validation": "^2.2.3",
     "bitcoinjs-lib": "^6.1.5",
     "bitcoinjs-message": "^2.2.0",
-    "bitcore-lib": "^10.0.5",
-    "bitcore-mnemonic": "^10.0.5",
     "cbor-x": "^1.6.0",
-    "change-case": "^4.1.2",
     "commander": "^12.1.0",
-    "crypto": "^1.0.1",
     "dotenv": "^16.3.1",
     "ecpair": "^2.1.0",
-    "fs-extra": "^11.1.1",
-    "jsontokens": "^4.0.1",
-    "nice-repl": "^0.1.2",
     "noble-secp256k1": "^1.2.14",
     "node-fetch": "^2.7.0",
     "prettier": "^2.8.8",
-    "tiny-async-pool": "^2.1.0",
-    "tiny-secp256k1": "^2.2.3",
-    "ts-node": "^10.9.2",
-    "wrap-ansi": "^9.0.0",
-    "yargs": "^17.7.2"
+    "tiny-async-pool": "^2.1.0"
   },
   "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
 }

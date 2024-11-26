@@ -24,8 +24,5 @@
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "src/**/*.test.ts", "src/__fixtures__"],
-  "ts-node": {
-    "esm": true
-  }
+  "exclude": ["node_modules", "src/**/*.test.ts", "src/__fixtures__"]
 }

@@ -1,9 +1,9 @@
-import type { Config } from '@jest/types'
+import { JestConfigWithTsJest } from 'ts-jest'
 
-const config: Config.InitialOptions = {
+const jestConfig: JestConfigWithTsJest = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   testMatch: ['**/src/**/*.(spec|test).[jt]s?(x)'],
 }
 
-export default config
+export default jestConfig
