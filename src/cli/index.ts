@@ -588,13 +588,17 @@ const runeMint = new Command('mint')
         network: provider.network,
       },
     })
-    const gatheredUtxos = await utxo.accountSpendableUtxos({
-      account,
-      provider,
-    })
+    const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
+      await utxo.accountUtxos({
+        account,
+        provider,
+      })
     console.log(
       await rune.mint({
-        gatheredUtxos,
+        gatheredUtxos: {
+          utxos: accountSpendableTotalUtxos,
+          totalAmount: accountSpendableTotalBalance,
+        },
         runeId: options.runeId,
         feeRate: options.feeRate,
         account,

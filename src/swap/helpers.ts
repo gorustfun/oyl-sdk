@@ -1,4 +1,3 @@
-import { addressSpendableUtxos } from '../utxo/utxo'
 import { FormattedUtxo } from '../shared/interface'
 import { Provider } from '../provider'
 import {
