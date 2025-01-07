@@ -5,6 +5,7 @@ import { Opi } from '../rpclient/opi'
 import { OylApiClient } from '../apiclient'
 import * as bitcoin from 'bitcoinjs-lib'
 import { waitForTransaction } from '..'
+import { AlkanesRpc } from '../rpclient/alkanes'
 
 export type ProviderConstructorArgs = {
   url: string
@@ -56,6 +57,7 @@ export class Provider {
   public ord: OrdRpc
   public opi: Opi
   public api: OylApiClient
+  public alkanes: AlkanesRpc
   public network: bitcoin.networks.Network
   public networkType: string
   public url: string
@@ -79,6 +81,7 @@ export class Provider {
         isRegtest = true
     }
     const masterUrl = `${url}/${version}/${projectId}`
+    this.alkanes = new AlkanesRpc(masterUrl)
     this.sandshrew = new SandshrewBitcoinClient(masterUrl)
     this.esplora = new EsploraRpc(masterUrl)
     this.ord = new OrdRpc(masterUrl)

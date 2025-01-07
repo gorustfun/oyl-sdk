@@ -75,9 +75,15 @@ describe('Account Tests', () => {
     expect(account.taproot.hdPath).toBe("m/86'/0'/0'/0/0")
 
     expect(account.legacy.address).toBe('n1M8ZVQtL7QoFvGMg24D6b2ojWvFXCGpoS')
-    expect(account.nestedSegwit.address).toBe('2My47gHNc8nhX5kBWqXHU4f8uuQvQKEgwMd')
-    expect(account.nativeSegwit.address).toBe('bcrt1qcr8te4kr609gcawutmrza0j4xv80jy8zeqchgx')
-    expect(account.taproot.address).toBe('bcrt1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqvg32hk')
+    expect(account.nestedSegwit.address).toBe(
+      '2My47gHNc8nhX5kBWqXHU4f8uuQvQKEgwMd'
+    )
+    expect(account.nativeSegwit.address).toBe(
+      'bcrt1qcr8te4kr609gcawutmrza0j4xv80jy8zeqchgx'
+    )
+    expect(account.taproot.address).toBe(
+      'bcrt1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqvg32hk'
+    )
 
     expect(account.legacy.pubkey).toBe(
       '03aaeb52dd7494c361049de67cc680e83ebcbbbdbeb13637d92cd845f70308af5e'

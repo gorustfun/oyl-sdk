@@ -1,6 +1,7 @@
 node_modules
 .env
-.idea
+.idea/
+*.iml
 .DS_Store
 .vscode
 src.ts/Untitled-2.json

@@ -20,10 +20,11 @@
       "@brc20/*": ["brc20/*"],
       "@rune/*": ["rune/*"],
       "@signer/*": ["signer/*"],
-      "@utxo/*": ["utxo/*"]
+      "@utxo/*": ["utxo/*"],
+      "@alkanes/*": ["alkanes/*"]
     }
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/**/*.wasm"],
   "exclude": ["node_modules", "src/**/*.test.ts", "src/__fixtures__"],
   "ts-node": {
     "esm": true

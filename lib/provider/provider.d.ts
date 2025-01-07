@@ -4,6 +4,7 @@ import { OrdRpc } from '../rpclient/ord';
 import { Opi } from '../rpclient/opi';
 import { OylApiClient } from '../apiclient';
 import * as bitcoin from 'bitcoinjs-lib';
+import { AlkanesRpc } from '../rpclient/alkanes';
 export type ProviderConstructorArgs = {
     url: string;
     projectId: string;
@@ -27,6 +28,7 @@ export declare class Provider {
     ord: OrdRpc;
     opi: Opi;
     api: OylApiClient;
+    alkanes: AlkanesRpc;
     network: bitcoin.networks.Network;
     networkType: string;
     url: string;
