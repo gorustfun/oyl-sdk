@@ -398,7 +398,7 @@ export const createDeployCommit = async ({
   feeRate?: number
   fee?: number
 }) => {
-  try {
+ // try {
     const originalGatheredUtxos = gatheredUtxos
 
     const minFee = minimumFee({
@@ -536,9 +536,9 @@ export const createDeployCommit = async ({
     })
 
     return { psbt: formattedPsbtTx.toBase64(), script }
-  } catch (error) {
-    throw new OylTransactionError(error)
-  }
+  // } catch (error) {
+  //   throw new OylTransactionError(error)
+  // }
 }
 
 export const createDeployReveal = async ({
