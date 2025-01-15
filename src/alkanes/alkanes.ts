@@ -464,7 +464,7 @@ export const createDeployCommit = async ({
       if (gatheredUtxos.totalAmount < finalFee) {
         gatheredUtxos = findXAmountOfSats(
           originalGatheredUtxos.utxos,
-          40000 + Number(inscriptionSats)
+          20000 + Number(inscriptionSats)
         )
       }
     }
