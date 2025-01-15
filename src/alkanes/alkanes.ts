@@ -16,8 +16,7 @@ import { getAddressType } from '../shared/utils'
 import { Signer } from '../signer'
 import { toXOnly } from 'bitcoinjs-lib/src/psbt/bip371'
 import { LEAF_VERSION_TAPSCRIPT } from 'bitcoinjs-lib/src/payments/bip341'
-import path from 'path'
-import fs from 'fs-extra'
+
 import { gzip as _gzip } from 'node:zlib'
 import { promisify } from 'util'
 import { ProtoStone, encodeRunestoneProtostone } from 'alkanes/lib/index.js'
@@ -413,6 +412,8 @@ export const createDeployCommit = async ({
     let psbt = new bitcoin.Psbt({ network: provider.network })
 
     if (!payload && typeof window === 'undefined') {
+      const path = require('path')
+      const fs = require('fs-extra')
       const binary = new Uint8Array(
         Array.from(
           await fs.readFile(path.join(__dirname, './', 'free_mint.wasm'))
