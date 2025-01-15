@@ -22,7 +22,7 @@ import { Provider } from '../provider/provider'
 import { addressFormats } from '@sadoprotocol/ordit-sdk'
 import { encodeRunestone, RunestoneSpec } from '@magiceden-oss/runestone-lib'
 import { AddressKey } from '@account/account'
-import { decode } from 'cbor-x/decode'
+import { decode } from 'cbor-x'
 
 bitcoin.initEccLib(ecc)
 
