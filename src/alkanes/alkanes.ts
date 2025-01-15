@@ -1113,7 +1113,7 @@ export const deployCommit = async ({
     account,
     provider,
     feeRate,
-    fee: commitFee,
+    fee: 40000,
   })
 
   const { signedPsbt } = await signer.signAllInputs({
