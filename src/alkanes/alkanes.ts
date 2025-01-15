@@ -412,7 +412,7 @@ export const createDeployCommit = async ({
 
     let psbt = new bitcoin.Psbt({ network: provider.network })
 
-    if (!payload) {
+    if (!payload && typeof window === 'undefined') {
       const binary = new Uint8Array(
         Array.from(
           await fs.readFile(path.join(__dirname, './', 'free_mint.wasm'))
@@ -424,7 +424,7 @@ export const createDeployCommit = async ({
         cursed: false,
         tags: { contentType: '' },
       }
-    }
+    } else {throw new Error('Contract wasm is required')}
 
     const script = Buffer.from(
       envelope.p2tr_ord_reveal(toXOnly(tweakedTaprootKeyPair.publicKey), [
