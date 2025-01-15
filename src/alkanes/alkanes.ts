@@ -561,8 +561,12 @@ export const createDeployReveal = async ({
   commitTxId: string
 }) => {
   try {
+    console.log('param feeRate', feeRate)
+    console.log('feeEstimates')
+    console.log(await provider.esplora.getFeeEstimates())
     if (!feeRate) {
       feeRate = (await provider.esplora.getFeeEstimates())['1']
+      console.log('feeRate', feeRate)
     }
 
     const psbt: bitcoin.Psbt = new bitcoin.Psbt({ network: provider.network })
@@ -894,9 +898,14 @@ export const actualDeployRevealFee = async ({
   provider: Provider
   feeRate?: number
 }) => {
+  console.log('ACTUAL DeployReveal  PARAM feeRate', feeRate)
+
+  console.log(' actual DeployReveal feeEstimates', await provider.esplora.getFeeEstimates())
   if (!feeRate) {
     feeRate = (await provider.esplora.getFeeEstimates())['1']
   }
+
+  console.log('feeRate', feeRate)
 
   const { psbtHex } = await createDeployReveal({
     createReserveNumber,
@@ -911,6 +920,8 @@ export const actualDeployRevealFee = async ({
   const vsize = (
     await provider.sandshrew.bitcoindRpc.testMemPoolAccept([psbtHex])
   )[0].vsize
+
+  console.log('vsize', vsize)
 
   console.log(await provider.sandshrew.bitcoindRpc.testMemPoolAccept([psbtHex]))
 
@@ -1150,6 +1161,8 @@ export const deployReveal = async ({
     provider,
     feeRate,
   })
+
+  console.log('actual DeployReveal fee', fee)
 
   const { psbt: finalRevealPsbt } = await createDeployReveal({
     createReserveNumber,
