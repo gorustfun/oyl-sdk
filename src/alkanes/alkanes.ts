@@ -9,7 +9,7 @@ import {
   getOutputValueByVOutIndex,
   inscriptionSats,
   tweakSigner,
-} from '../shared/utils'
+} from '..'
 import { OylTransactionError } from '../errors'
 import { GatheredUtxos, AlkanesPayload } from '../shared/interface'
 import { getAddressType } from '../shared/utils'

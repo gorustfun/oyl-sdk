@@ -3,7 +3,7 @@ import { Provider } from '../provider'
 import { Account, AddressKey, SpendStrategy } from '../account'
 import asyncPool from 'tiny-async-pool'
 import { OrdOutput } from 'rpclient/ord'
-import { getAddressKey } from '../shared/utils'
+import { getAddressKey } from '..'
 
 export interface EsploraUtxo {
   txid: string
