@@ -22,7 +22,7 @@ import { Provider } from '../provider/provider'
 import { addressFormats } from '@sadoprotocol/ordit-sdk'
 import { encodeRunestone, RunestoneSpec } from '@magiceden-oss/runestone-lib'
 import { AddressKey } from '@account/account'
-import * as CBOR from 'cbor-x'
+import { decode } from 'cbor-x'
 
 bitcoin.initEccLib(ecc)
 
@@ -759,5 +759,5 @@ export function findXAmountOfSats(utxos: FormattedUtxo[], target: number) {
 
 export function decodeCBOR(hex: string): DecodedCBOR {
   const buffer = Buffer.from(hex, 'hex')
-  return CBOR.decode(buffer)
+  return decode(buffer)
 }
