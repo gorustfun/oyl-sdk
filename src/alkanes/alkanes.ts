@@ -444,13 +444,13 @@ export const createDeployCommit = async ({
     })
 
     psbt.addOutput({
-      value: 20000 + 546,
+      value: 40000 + 546,
       address: inscriberInfo.address,
     })
 
     gatheredUtxos = findXAmountOfSats(
       originalGatheredUtxos.utxos,
-      20000 + Number(inscriptionSats)
+      40000 + Number(inscriptionSats)
     )
 
     if (!fee && gatheredUtxos.utxos.length > 1) {
@@ -464,7 +464,7 @@ export const createDeployCommit = async ({
       if (gatheredUtxos.totalAmount < finalFee) {
         gatheredUtxos = findXAmountOfSats(
           originalGatheredUtxos.utxos,
-          20000 + Number(inscriptionSats)
+          40000 + Number(inscriptionSats)
         )
       }
     }
@@ -1113,7 +1113,7 @@ export const deployCommit = async ({
     account,
     provider,
     feeRate,
-    fee: 40000,
+    fee: commitFee,
   })
 
   const { signedPsbt } = await signer.signAllInputs({
