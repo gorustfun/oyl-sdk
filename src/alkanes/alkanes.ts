@@ -425,7 +425,9 @@ export const createDeployCommit = async ({
         cursed: false,
         tags: { contentType: '' },
       }
-    } else {throw new Error('Contract wasm is required')}
+    } else if (!payload) {
+      throw new Error('Contract wasm is required')
+    }
 
     const script = Buffer.from(
       envelope.p2tr_ord_reveal(toXOnly(tweakedTaprootKeyPair.publicKey), [
