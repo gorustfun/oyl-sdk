@@ -522,7 +522,7 @@ export const createDeployCommit = async ({
     }
 
     const changeAmount =
-      gatheredUtxos.totalAmount - (finalFee + 20000 + inscriptionSats)
+      gatheredUtxos.totalAmount - (finalFee + 40000 + inscriptionSats)
 
     psbt.addOutput({
       address: account[account.spendStrategy.changeAddress].address,
