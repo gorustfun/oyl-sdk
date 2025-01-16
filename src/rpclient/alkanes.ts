@@ -59,7 +59,7 @@ export class AlkanesRpc {
     this.alkanesUrl = url
   }
 
-  async _call(method, params = [], timeout = 5000) {
+  async _call(method, params = [], timeout = 10000) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 

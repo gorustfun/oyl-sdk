@@ -25,7 +25,7 @@ export class OrdRpc {
     this.ordUrl = url
   }
 
-  async _call(method: string, params = [], timeout = 5000) {
+  async _call(method: string, params = [], timeout = 10000) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
     const requestData = {
