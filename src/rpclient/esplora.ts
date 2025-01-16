@@ -57,7 +57,7 @@ export class EsploraRpc {
     this.esploraUrl = url
   }
 
-  async _call(method, params = [], timeout = 10000) {
+  async _call(method, params = [], timeout = 50000) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
