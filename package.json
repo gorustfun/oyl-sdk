@@ -12,6 +12,7 @@
     "build": "run-s build:tsc build:copywasm",
     "build:tsc": "tsc",
     "build:copywasm": "cross-env cp src/alkanes/*.wasm lib/alkanes/",
+    "clean": "rimraf node_modules",
     "dev": "tsc -w",
     "prettier": "prettier --write ./src.ts/**/*.ts",
     "test": "jest",
