@@ -9,7 +9,9 @@
     "url": "git+https://github.com/oyl-wallet/oyl-sdk.git"
   },
   "scripts": {
-    "build": "tsc && cp src/**/*.wasm lib/alkanes",
+    "build": "run-s build:tsc build:copywasm",
+    "build:tsc": "tsc",
+    "build:copywasm": "cross-env cp src/alkanes/*.wasm lib/alkanes/",
     "dev": "tsc -w",
     "prettier": "prettier --write ./src.ts/**/*.ts",
     "test": "jest",
