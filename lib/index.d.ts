@@ -11,3 +11,4 @@ export * as brc20 from './brc20';
 export * as utxo from './utxo';
 export * as collectible from './collectible';
 export * as networks from './network';
+export * as alkanes from './alkanes';
