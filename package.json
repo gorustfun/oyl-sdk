@@ -12,6 +12,7 @@
     "build": "run-s build:tsc build:copywasm",
     "build:tsc": "tsc",
     "build:install": "yarn",
+    "build:run-s": "cross-env node scripts/build-run-s",
     "build:copywasm": "cross-env cp src/alkanes/*.wasm lib/alkanes/",
     "clean": "rimraf node_modules",
     "reset": "node build/dist/run-s clean build:install build",
