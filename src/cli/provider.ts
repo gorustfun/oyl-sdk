@@ -65,7 +65,6 @@ export const alkanesProvider = new Command('alkanes')
       )
     } catch (error) {
       console.log(error)
-      console.log(await provider.alkanes[options.method](options.parameters))
     }
   })
 
@@ -95,6 +94,6 @@ export const ordProviderCall = new Command('ord')
       isJson = JSON.parse(options.parameters)
       console.log(await provider.ord[options.method](isJson))
     } catch (error) {
-      console.log(await provider.ord[options.method](options.parameters))
+      console.log(error)
     }
   })

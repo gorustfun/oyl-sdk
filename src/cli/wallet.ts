@@ -7,6 +7,7 @@ import {
   Signer,
 } from '..'
 import { DEFAULT_PROVIDER } from './constants'
+import { bitcoin } from 'bitcoinjs-lib/src/networks'
 
 export type NetworkType = 'mainnet' | 'regtest' | 'oylnet'
 
@@ -29,6 +30,20 @@ export class Wallet {
     this.networkType = options?.networkType || 'regtest'
     this.provider = DEFAULT_PROVIDER[this.networkType]
 
+    const account: Account = {
+      taproot: { pubkey: '', pubKeyXOnly: '', address: '', hdPath: '' },
+      nativeSegwit: { pubkey: '', address: '', hdPath: '' },
+      nestedSegwit: { pubkey: '', address: '', hdPath: '' },
+      legacy: { pubkey: '', address: '', hdPath: '' },
+      network: bitcoin,
+      spendStrategy: {
+        changeAddress: 'nativeSegwit',
+        addressOrder: [],
+        utxoSortGreatestToLeast: true,
+      },
+    }
+
+    //use getHDPaths()
     this.account = mnemonicToAccount({
       mnemonic: this.mnemonic,
       opts: {

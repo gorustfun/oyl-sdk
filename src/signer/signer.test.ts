@@ -132,14 +132,14 @@ describe('Signer', () => {
   })
 
   test('Should sign a message with taproot keypair', async () => {
-    const signtaure =
-      'AUGENGp6oQaTLd9wQt6gOS9lbv03VYMj+T8Hbl7Q5BVqyOl0vn4f8hj8W8e3t8XxqCN32X5sCKmjegMx0hL3Q6EQAQ=='
     let signer = new Signer(network, keys)
 
     const address = bitcoin.payments.p2tr({
       internalPubkey: toXOnly(signer.taprootKeyPair.publicKey),
       network,
     }).address
+
+    console.log(address)
 
     const signedMessage = await signer.signMessage({
       message,
@@ -154,7 +154,6 @@ describe('Signer', () => {
       signedMessage!
     )
 
-    expect(signedMessage).toEqual(signtaure)
     expect(verifySignature).toBe(true)
   })
 

@@ -3,10 +3,11 @@ import fs from 'fs-extra'
 import { gzip as _gzip } from 'node:zlib'
 import { promisify } from 'util'
 import path from 'path'
-
-import * as alkanes from '../alkanes'
+import * as alkanes from '../alkanes/alkanes'
 import * as utxo from '../utxo'
 import { Wallet } from './wallet'
+import { contractDeployment } from '../alkanes/contract'
+import { send, tokenDeployment } from '../alkanes/token'
 
 export const alkanesTrace = new Command('trace')
   .description('Returns data based on txid and vout of deployed alkane')
@@ -53,7 +54,7 @@ export const alkaneContractDeploy = new Command('new-contract')
   )
 
   /* @dev example call 
-oyl alkane factory-deploy -c ./src/alkanes/free_mint.wasm -resNumber 777 -p regtest -feeRate 2
+oyl alkane new-contract -c ./src/alkanes/free_mint.wasm -resNumber 777 -p regtest -feeRate 2
 */
 
   .action(async (options) => {
@@ -79,7 +80,7 @@ oyl alkane factory-deploy -c ./src/alkanes/free_mint.wasm -resNumber 777 -p regt
     }
 
     console.log(
-      await alkanes.contractDeployment({
+      await contractDeployment({
         reserveNumber: options.reserveNumber,
         payload,
         gatheredUtxos: {
@@ -119,7 +120,7 @@ export const alkaneTokenDeploy = new Command('new-token')
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
 
   /* @dev example call 
-oyl alkane new-token -i ./player1.png -resNumber 10 -p regtest -feeRate 2 -amount 1000 -name "OYL" -symbol "OL" -cap 100000 -pre 5000
+oyl alkane new-token -resNumber 10 -p regtest -feeRate 2 -amount 1000 -name "OYL" -symbol "OL" -cap 100000 -pre 5000
 */
 
   .action(async (options) => {
@@ -166,7 +167,7 @@ oyl alkane new-token -i ./player1.png -resNumber 10 -p regtest -feeRate 2 -amoun
       }
 
       console.log(
-        await alkanes.tokenDeployment({
+        await tokenDeployment({
           payload,
           gatheredUtxos: {
             utxos: accountSpendableTotalUtxos,
@@ -255,7 +256,7 @@ export const alkaneSend = new Command('send')
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
 
   /* @dev example call 
-oyl alkane send -p regtest -feeRate 2 -tx '1' -blk '2' -amt 1000 -to bcrt1pkq6ayylfpe5hn05550ry25pkakuf72x9qkjc2sl06dfcet8sg25ql4dm73
+oyl alkane send -p regtest -feeRate 2 -tx 1 -blk 2 -amt 1000 -to bcrt1pkq6ayylfpe5hn05550ry25pkakuf72x9qkjc2sl06dfcet8sg25ql4dm73
 */
 
   .action(async (options) => {
@@ -267,7 +268,7 @@ oyl alkane send -p regtest -feeRate 2 -tx '1' -blk '2' -amt 1000 -to bcrt1pkq6ay
       await utxo.accountUtxos({ account, provider })
 
     console.log(
-      await alkanes.send({
+      await send({
         gatheredUtxos: {
           utxos: accountSpendableTotalUtxos,
           totalAmount: accountSpendableTotalBalance,

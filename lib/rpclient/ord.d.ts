@@ -17,7 +17,7 @@ export interface OrdOutput {
 export declare class OrdRpc {
     ordUrl: string;
     constructor(url: string);
-    _call(method: string, params?: any[], timeout?: number): Promise<any>;
+    _call(method: string, params?: any[]): Promise<any>;
     getInscriptionById(inscriptionId: string): Promise<any>;
     getInscriptionContent(inscriptionId: string): Promise<any>;
     getInscriptionByNumber(number: string): Promise<any>;

@@ -33,10 +33,7 @@ export const privateKeysCommand = new Command('privateKeys')
   })
 
 /* @dev example call 
-  oyl account mnemonicToAccount \
-  --provider oylnet \
-  --index 1 \
-  --wallet-standard bip44_standard
+  oyl account mnemonicToAccount -p oylnet
 */
 export const mnemonicToAccountCommand = new Command('mnemonicToAccount')
   .description('Returns an account from a mnemonic')

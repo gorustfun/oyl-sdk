@@ -1,4 +1,4 @@
-[![npm version](https://badge.fury.io/js/angular2-expandable-list.svg)](https://badge.fury.io/js/angular2-expandable-list)
+[![npm version](https://badge.fury.io/js/%40oyl%2Fsdk.svg)](https://www.npmjs.com/package/@oyl/sdk)
 
 # Oyl Sdk
 
@@ -22,10 +22,17 @@
 To install and set up the library, run:
 
 ```sh
+$ git clone https://github.com/oyl-wallet/oyl-sdk.git
+$ cd oyl-sdk
 $ yarn install
 ```
 
 ## Usage
+
+### Prerequisites
+
+- Node.js >= 20
+- yarn
 
 ### Running the tests
 
@@ -63,6 +70,10 @@ $ yarn oyl --help
 e.g. `oyl utxos addressUtxos -a bcrt1qcr8te4kr609gcawutmrza0j4xv80jy8zeqchgx -p regtest`.
 For more detailed instructions on how to use the cli, refer to the README.md found in the cli directory.
 
+## Documentation
+
+Full documentation is available at https://alkanes.build/
+
 ## Contributing
 
 1.  Fork it!
@@ -74,14 +85,14 @@ For more detailed instructions on how to use the cli, refer to the README.md fou
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags).
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/oyl-wallet/oyl-sdk/tags).
 
 ## Authors
 
 - **Oyl Dynamics**
 
-See also the list of [contributors](https://github.com/your/project/contributors) who participated in this project.
+See also the list of [contributors](https://github.com/oyl-wallet/oyl-sdk/contributors) who participated in this project.
 
 ## License
 
-[MIT License]
+[MIT License](https://github.com/Oyl-Wallet/oyl-sdk/blob/main/LICENSE)

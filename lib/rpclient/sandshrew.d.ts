@@ -3,7 +3,7 @@ export declare class SandshrewBitcoinClient {
     apiUrl: string;
     bitcoindRpc: IRpcMethods;
     constructor(apiUrl: any);
-    _call(method: any, params?: any[], timeout?: number): Promise<any>;
+    _call(method: string, params?: any[]): Promise<any>;
     getBlockTimeByHeight(blockHeight: number): Promise<any>;
     multiCall(parameters: (string | string[])[][]): Promise<any>;
     _initializeRpcMethods(): void;

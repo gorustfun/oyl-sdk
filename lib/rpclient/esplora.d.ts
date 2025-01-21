@@ -49,7 +49,7 @@ export interface EsploraUtxo {
 export declare class EsploraRpc {
     esploraUrl: string;
     constructor(url: string);
-    _call(method: any, params?: any[], timeout?: number): Promise<any>;
+    _call(method: string, params?: any[]): Promise<any>;
     getTxInfo(txid: string): Promise<EsploraTx>;
     getTxStatus(txid: string): Promise<any>;
     getBlockTxids(hash: string): Promise<any>;

@@ -18,7 +18,6 @@ import {
   addressBRC20Balance,
   addressUtxosToSpend,
 } from './utxo'
-import { ADDRESS_COMMANDS } from "./address";
 import {
   mnemonicToAccountCommand,
   privateKeysCommand,
@@ -49,8 +48,6 @@ const accountCommand = new Command('account')
   .addCommand(signPsbt)
   .addCommand(privateKeysCommand)
   .addCommand(generateMnemonicCommand)
-
-const addressCommand = Object.values(ADDRESS_COMMANDS).reduce((r, command) => r.addCommand(command), new Command("address").description("Address utils"))
 
 const utxosCommand = new Command('utxo')
   .description('Examine utxos')
@@ -91,7 +88,6 @@ const providerCommand = new Command('provider')
 
 program.addCommand(regtestCommand)
 program.addCommand(alkaneCommand)
-program.addCommand(addressCommand)
 program.addCommand(utxosCommand)
 program.addCommand(accountCommand)
 program.addCommand(btcCommand)

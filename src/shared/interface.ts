@@ -653,3 +653,8 @@ export interface AlkanesPayload {
   cursed: boolean
   tags: { contentType: string }
 }
+
+export interface AlkaneId {
+  block: string
+  tx: string
+}

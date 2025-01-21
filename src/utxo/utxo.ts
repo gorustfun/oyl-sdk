@@ -1,4 +1,3 @@
-import * as bitcoin from 'bitcoinjs-lib'
 import { Provider } from '../provider'
 import { Account, AddressKey, SpendStrategy } from '../account'
 import asyncPool from 'tiny-async-pool'
@@ -56,7 +55,6 @@ export const accountBalance = async ({
   let pendingAmount: number = 0
   let amount: number = 0
 
-  console.log(account);
   for (let i = 0; i < account.spendStrategy.addressOrder.length; i++) {
     const address = account[account.spendStrategy.addressOrder[i]].address
     const { chain_stats, mempool_stats } = await provider.esplora._call(

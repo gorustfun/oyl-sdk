@@ -1,14 +1,15 @@
 {
   "name": "@oyl/sdk",
-  "version": "1.12.3",
+  "version": "1.12.4",
   "description": "Oyl SDK",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "repository": "https://github.com/oyl-wallet/oyl-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oyl-wallet/oyl-sdk.git"
+  },
   "scripts": {
-    "build": "run-s build:tsc build:copywasm",
-    "build:tsc": "tsc",
-    "build:copywasm": "cross-env cp src/alkanes/*.wasm lib/alkanes/",
+    "build": "tsc && cp src/**/*.wasm lib/alkanes",
     "dev": "tsc -w",
     "prettier": "prettier --write ./src.ts/**/*.ts",
     "test": "jest",
@@ -40,22 +41,16 @@
   },
   "dependencies": {
     "@bitcoinerlab/secp256k1": "1.0.2",
-    "@cmdcode/crypto-utils": "2.4.6",
-    "@cmdcode/tapscript": "1.5.2",
     "@magiceden-oss/runestone-lib": "1.0.2",
-    "@okxweb3/coin-bitcoin": "1.0.8-beta.12",
     "@sadoprotocol/ordit-sdk": "3.0.0",
     "@scure/btc-signer": "1.5.0",
-    "alkanes": "https://github.com/kungfuflex/alkanes",
+    "alkanes": "git+https://github.com/kungfuflex/alkanes.git",
     "bignumber.js": "9.1.2",
     "bip32": "4.0.0",
     "bip322-js": "2.0.0",
     "bip39": "3.1.0",
     "bitcoin-address-validation": "2.2.3",
     "bitcoinjs-lib": "6.1.7",
-    "bitcoinjs-message": "2.2.0",
-    "bitcore-lib": "10.7.0",
-    "bitcore-mnemonic": "10.7.0",
     "cbor-x": "1.6.0",
     "change-case": "4.1.2",
     "commander": "12.1.0",
@@ -64,14 +59,26 @@
     "ecpair": "2.1.0",
     "fs-extra": "11.2.0",
     "nice-repl": "0.1.2",
-    "noble-secp256k1": "1.2.14",
     "node-fetch": "2.7.0",
     "prettier": "2.8.8",
     "tiny-async-pool": "2.1.0",
-    "tiny-secp256k1": "2.2.3",
     "ts-node": "10.9.2",
-    "wrap-ansi": "9.0.0",
-    "yargs": "17.7.2"
+    "wrap-ansi": "9.0.0"
   },
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
+  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72",
+  "keywords": [
+    "bitcoin",
+    "wallet",
+    "sdk",
+    "defi",
+    "oyl",
+    "oyl-sdk"
+  ],
+  "bugs": {
+    "url": "https://github.com/oyl-wallet/oyl-sdk/issues"
+  },
+  "homepage": "https://github.com/oyl-wallet/oyl-sdk#readme",
+  "directories": {
+    "lib": "lib"
+  }
 }

@@ -1,5 +1,8 @@
 import fetch from 'node-fetch'
 
+export const stripHexPrefix = (s: string): string =>
+  s.substr(0, 2) === '0x' ? s.substr(2) : s
+
 export interface Rune {
   rune: {
     id: { block: string; tx: string }
@@ -67,10 +70,7 @@ export class AlkanesRpc {
     this.alkanesUrl = url
   }
 
-  async _call(method, params = [], timeout = 5000) {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
-
+  async _call(method: string, params = []) {
     const requestData = {
       jsonrpc: '2.0',
       method: method,
@@ -85,14 +85,10 @@ export class AlkanesRpc {
       },
       body: JSON.stringify(requestData),
       cache: 'no-cache',
-      signal: controller.signal,
     }
 
     try {
       const response = await fetch(this.alkanesUrl, requestOptions)
-      clearTimeout(timeoutId)
-
-
       const responseData = await response.json()
 
       if (responseData.error) {
@@ -103,8 +99,8 @@ export class AlkanesRpc {
       return responseData.result
     } catch (error) {
       if (error.name === 'AbortError') {
-        console.error('Request Timeout:', error);
-        throw new Error('Request timed out');
+        console.error('Request Timeout:', error)
+        throw new Error('Request timed out')
       } else {
         console.error('Request Error:', error)
         throw error
@@ -142,14 +138,30 @@ export class AlkanesRpc {
         protocolTag,
       },
     ])
-    const alkanesList = ret.outpoints.filter(
-      (outpoint) => outpoint.runes.length > 0
-    )
+
+    const alkanesList = ret.outpoints
+      .filter((outpoint) => outpoint.runes.length > 0)
+      .map((outpoint) => ({
+        ...outpoint,
+        runes: outpoint.runes.map((rune) => ({
+          ...rune,
+          balance: stripHexPrefix(rune.balance),
+          rune: {
+            ...rune.rune,
+            id: {
+              block: stripHexPrefix(rune.rune.id.block),
+              tx: stripHexPrefix(rune.rune.id.tx),
+            },
+          },
+        })),
+      }))
+
     if (name) {
       return alkanesList.flatMap((outpoints) =>
         outpoints.runes.filter((item) => item.rune.name === name)
       )
     }
+
     return alkanesList
   }
 
@@ -167,28 +179,31 @@ export class AlkanesRpc {
     ret.parsed = parsed
     return ret
   }
-  async getAlkanesByOutpoint({
-    txid,
-    vout,
-    protocolTag = '1',
-  }: {
-    txid: string
-    vout: number
-    protocolTag?: string
-  }): Promise<any> {
-    return await this._call('alkanes_protorunesbyoutpoint', [
-      {
-        txid:
-          '0x' +
-          Buffer.from(Array.from(Buffer.from(txid, 'hex')).reverse()).toString(
-            'hex'
-          ),
-        vout,
-        protocolTag,
-      },
-    ])
-  }
 
+  /* @dev wip 
+    async getAlkanesByOutpoint({
+     txid,
+     vout,
+     protocolTag = '1',
+   }: {
+     txid: string
+     vout: number
+     protocolTag?: string
+   }): Promise<any> {
+     console.log(txid, vout, protocolTag)
+     return await this._call('alkanes_protorunesbyoutpoint', [
+       {
+         txid:
+           '0x' +
+           Buffer.from(Array.from(Buffer.from(txid, 'hex')).reverse()).toString(
+             'hex'
+           ),
+         vout,
+         protocolTag,
+       },
+     ])
+   }
+*/
   async getAlkaneById({
     block,
     tx,
@@ -241,7 +256,7 @@ export class AlkanesRpc {
 
   async getAlkanes({
     limit,
-    offset = 1,
+    offset = 0,
   }: {
     limit: number
     offset?: number

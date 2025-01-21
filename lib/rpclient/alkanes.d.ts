@@ -1,3 +1,4 @@
+export declare const stripHexPrefix: (s: string) => string;
 export interface Rune {
     rune: {
         id: {
@@ -57,7 +58,7 @@ interface AlkaneToken {
 export declare class AlkanesRpc {
     alkanesUrl: string;
     constructor(url: string);
-    _call(method: any, params?: any[], timeout?: number): Promise<any>;
+    _call(method: string, params?: any[]): Promise<any>;
     getAlkanesByHeight({ height, protocolTag, }: {
         height: number;
         protocolTag: string;
@@ -72,11 +73,6 @@ export declare class AlkanesRpc {
         txid: string;
     }): Promise<any>;
     simulate(request: AlkaneSimulateRequest): Promise<any>;
-    getAlkanesByOutpoint({ txid, vout, protocolTag, }: {
-        txid: string;
-        vout: number;
-        protocolTag?: string;
-    }): Promise<any>;
     getAlkaneById({ block, tx, }: {
         block: string;
         tx: string;

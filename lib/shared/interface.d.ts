@@ -568,3 +568,7 @@ export interface AlkanesPayload {
         contentType: string;
     };
 }
+export interface AlkaneId {
+    block: string;
+    tx: string;
+}

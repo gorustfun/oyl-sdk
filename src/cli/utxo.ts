@@ -70,7 +70,7 @@ export const addressUtxosToSpend = new Command('addressUtxos')
     'address you want to get utxos for'
   )
   /* @dev example call
-    oyl utxo addressUtxos -a bcrt1qcr8te4kr609gcawutmrza0j4xv80jy8zeqchgx -p regtest
+    oyl utxo addressUtxos -a bcrt1q54zh4xfz2jkqah8nqvp2ltl9mvrmf6s69h6au0 -p alkanes
   */
   .action(async (options) => {
     const wallet: Wallet = new Wallet({ networkType: options.provider })

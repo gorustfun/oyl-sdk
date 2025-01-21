@@ -1,8 +1,8 @@
-curl -s 'http://localhost:3000/v1/regtest' \
+curl -s 'http://localhost:18888/v1/regtest' \
 --header 'Content-Type: application/json' \
 --data '{
     "jsonrpc": "2.0",
     "id": 1,
     "method": "esplora_tx",
-    "params": ["c7828990c852a5398ed706a2ffa72b9f74fdbb751a439e4ef0b137db97aa35bd"]
+    "params": ["6dbdd95a01a86684eee385b584d02c82f37d45ce3f9607707131b77fe1b4fa43"]
 }' | jq .

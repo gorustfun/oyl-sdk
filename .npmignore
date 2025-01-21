@@ -1,0 +1,11 @@
+node_modules
+.env
+.idea/
+*.iml
+.DS_Store
+.vscode
+src.ts/Untitled-2.json
+src.ts/Untitled-1.json
+logs.txt
+yarn-error.log
+package-lock.json

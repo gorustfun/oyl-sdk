@@ -13,6 +13,10 @@ export const init = new Command('init')
   .description(
     'Generate 260 blocks to initialize regtest chain (funds faucet address and an optional user address)'
   )
+  .requiredOption(
+    '-p, --provider <provider>',
+    'provider to use when querying the network for utxos'
+  )
   .option(
     '-m, --mnemonic <mnemonic>',
     '(optional) Mnemonic used for signing transactions (default = abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about)'
@@ -20,10 +24,6 @@ export const init = new Command('init')
   .option(
     '-a, --address <address>',
     '(optional) Address that will receive initial funds (default = bcrt1qcr8te4kr609gcawutmrza0j4xv80jy8zeqchgx)'
-  )
-  .option(
-    '-p, --provider <provider>',
-    '(optional) provider to use to access the network.'
   )
   .action(async (options) => {
     const totalBlockCount = 260
@@ -79,6 +79,10 @@ export const init = new Command('init')
   */
 export const genBlocks = new Command('genBlocks')
   .description('Generate blocks with transactions from mempool')
+  .requiredOption(
+    '-p, --provider <provider>',
+    'provider to use when querying the network for utxos'
+  )
   .option(
     '-a, --address <address>',
     '(optional) Address to recieve block reward.'
@@ -88,14 +92,10 @@ export const genBlocks = new Command('genBlocks')
     '(optional)Number of blocks (default = 1)',
     parseInt
   )
-  .option(
-    '-p, --provider <provider>',
-    '(optional) provider to use to access the network.'
-  )
   .action(async (options) => {
     const count = options.count || 1
     const address = options.address || RANDOM_ADDRESS
-    const provider: Provider = DEFAULT_PROVIDER[options.provider || 'regtest'];
+    const provider: Provider = DEFAULT_PROVIDER[options.provider || 'regtest']
     const genBlock = await provider.sandshrew.bitcoindRpc.generateToAddress(
       count,
       address

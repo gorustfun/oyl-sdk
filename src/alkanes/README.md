@@ -3,7 +3,7 @@
 1. Deploy factory wasm using deployFactory
 
 ```
-oyl alkane factoryDeploy -resNumber 0x7 -m 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about' -native 4604b4b710fe91f584fff084e1a9159fe4f8408fff380596a604948474ce4fa3 -taproot 41f41d69260df4cf277826a9b65a3717e4eeddbeedf637f212ca096576479361 -address bcrt1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqvg32hk -p regtest -feeRate 2
+oyl alkane new-contract -resNumber 0x7 -p regtest -feeRate 2
 
 ```
 
@@ -13,14 +13,14 @@ This step only needs to be done 1 time, and everyone can use this contract to cr
 2. Launch a new token. This CLI function calls the execute function in alkanes.ts which builds a tx with a Protostone OP Return on it to send to yourself.
 
 ```
-oyl alkane new-token -i ./src/cli/player1.png -resNumber 0x7 -m 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about' -native 4604b4b710fe91f584fff084e1a9159fe4f8408fff380596a604948474ce4fa3 -taproot 41f41d69260df4cf277826a9b65a3717e4eeddbeedf637f212ca096576479361 -p regtest -feeRate 2 -amount 1000 -name "OYL" -symbol "OL" -cap 100000 -supply 5000
+oyl alkane new-token -i ./src/cli/player1.png -resNumber 0x7 -p regtest -feeRate 2 -amount 1000 -name "OYL" -symbol "OL" -cap 100000 -supply 5000
 
 ```
 
 3. You can then call OP Codes within the deployed token contract using the execute function and passing the alkane ID in the calldata
 
 ```
-oyl alkane execute -m 'abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about' -native 4604b4b710fe91f584fff084e1a9159fe4f8408fff380596a604948474ce4fa3 -taproot 41f41d69260df4cf277826a9b65a3717e4eeddbeedf637f212ca096576479361 -p regtest -feeRate 2 -calldata '2,1,77'
+oyl alkane execute -p regtest -feeRate 2 -calldata '2,1,77'
 
 ```
 
