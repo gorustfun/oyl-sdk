@@ -880,7 +880,7 @@ export const actualSendFee = async ({
     fee: estimatedFee,
   })
 
-  const { fee: finalFee } = await getEstimatedFee({
+  const { fee: finalFee, vsize } = await getEstimatedFee({
     feeRate,
     psbt: finalPsbt,
     provider,
@@ -903,7 +903,7 @@ export const actualSendFee = async ({
 
   // const finalFee = finalVsize * feeRate
 
-  return { fee: finalFee }
+  return { fee: finalFee, vsize }
 }
 
 export const actualMintFee = async ({
@@ -965,7 +965,7 @@ export const actualMintFee = async ({
     fee: estimatedFee,
   })
 
-  const { fee: finalFee } = await getEstimatedFee({
+  const { fee: finalFee, vsize } = await getEstimatedFee({
     feeRate,
     psbt: finalPsbt,
     provider,
@@ -989,7 +989,7 @@ export const actualMintFee = async ({
 
   // const finalFee = finalVsize * feeRate
 
-  return { fee: finalFee }
+  return { fee: finalFee, vsize }
 }
 
 export const actualEtchCommitFee = async ({

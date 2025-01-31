@@ -98,6 +98,7 @@ export declare const actualSendFee: ({ gatheredUtxos, account, runeId, provider,
     signer: Signer;
 }) => Promise<{
     fee: number;
+    vsize: number;
 }>;
 export declare const actualMintFee: ({ gatheredUtxos, account, runeId, provider, feeRate, signer, }: {
     gatheredUtxos: GatheredUtxos;
@@ -108,6 +109,7 @@ export declare const actualMintFee: ({ gatheredUtxos, account, runeId, provider,
     signer: Signer;
 }) => Promise<{
     fee: number;
+    vsize: number;
 }>;
 export declare const actualEtchCommitFee: ({ tweakedTaprootKeyPair, taprootKeyPair, gatheredUtxos, account, runeName, provider, feeRate, signer, }: {
     tweakedTaprootKeyPair: bitcoin.Signer;
