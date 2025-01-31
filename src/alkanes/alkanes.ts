@@ -894,6 +894,5 @@ export const deployCommit = async ({
     psbtBase64: signedPsbt,
   })
 
-  console.log('commit:', result)
   return { ...result, script: script.toString('hex') }
 }
