@@ -122,6 +122,7 @@ export declare const actualEtchCommitFee: ({ tweakedTaprootKeyPair, taprootKeyPa
     signer: Signer;
 }) => Promise<{
     fee: number;
+    vsize: number;
 }>;
 export declare const actualEtchRevealFee: ({ tweakedTaprootKeyPair, taprootKeyPair, symbol, cap, premine, perMintAmount, turbo, divisibility, runeName, commitTxId, receiverAddress, script, account, provider, feeRate, signer, }: {
     tweakedTaprootKeyPair: bitcoin.Signer;
@@ -142,6 +143,7 @@ export declare const actualEtchRevealFee: ({ tweakedTaprootKeyPair, taprootKeyPa
     signer: Signer;
 }) => Promise<{
     fee: number;
+    vsize: number;
 }>;
 export declare const send: ({ gatheredUtxos, toAddress, amount, runeId, inscriptionAddress, feeRate, account, provider, signer, }: {
     gatheredUtxos: GatheredUtxos;
