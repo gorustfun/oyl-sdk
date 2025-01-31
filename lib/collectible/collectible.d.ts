@@ -52,4 +52,5 @@ export declare const actualFee: ({ gatheredUtxos, account, inscriptionId, provid
     signer: Signer;
 }) => Promise<{
     fee: number;
+    vsize: number;
 }>;

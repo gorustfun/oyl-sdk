@@ -63,6 +63,7 @@ export declare const actualTransactRevealFee: ({ calldata, tweakedTaprootKeyPair
     feeRate?: number;
 }) => Promise<{
     fee: number;
+    vsize: number;
 }>;
 export declare const actualExecuteFee: ({ gatheredUtxos, account, calldata, provider, feeRate, signer, }: {
     gatheredUtxos: GatheredUtxos;
@@ -73,6 +74,7 @@ export declare const actualExecuteFee: ({ gatheredUtxos, account, calldata, prov
     signer: Signer;
 }) => Promise<{
     fee: number;
+    vsize: number;
 }>;
 export declare const executeReveal: ({ calldata, commitTxId, script, account, provider, feeRate, signer, }: {
     calldata: bigint[];
