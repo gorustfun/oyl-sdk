@@ -175,7 +175,7 @@ export const send = async ({
         feeRate,
         account,
         provider,
-        signer,
+        //signer,
       })
     ).fee
   }
@@ -209,7 +209,7 @@ export const actualFee = async ({
   feeRate,
   account,
   provider,
-  signer,
+  //signer,
 }: {
   utxos: FormattedUtxo[]
   toAddress: string
@@ -217,7 +217,7 @@ export const actualFee = async ({
   amount: number
   account: Account
   provider: Provider
-  signer: Signer
+  //signer: Signer
 }) => {
   const { psbt } = await createPsbt({
     utxos,

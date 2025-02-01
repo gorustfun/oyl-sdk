@@ -367,8 +367,9 @@ export const createMintPsbt = async ({
 
 export const createEtchCommit = async ({
   gatheredUtxos,
-  taprootKeyPair,
-  tweakedTaprootKeyPair,
+  //taprootKeyPair,
+  //tweakedTaprootKeyPair,
+  tweakedPublicKey,
   runeName,
   account,
   provider,
@@ -376,8 +377,9 @@ export const createEtchCommit = async ({
   fee,
 }: {
   gatheredUtxos: GatheredUtxos
-  taprootKeyPair: bitcoin.Signer
-  tweakedTaprootKeyPair: bitcoin.Signer
+  //taprootKeyPair: bitcoin.Signer
+  //tweakedTaprootKeyPair: bitcoin.Signer
+  tweakedPublicKey: string
   runeName: string
   account: Account
   provider: Provider
@@ -408,7 +410,7 @@ export const createEtchCommit = async ({
     )
 
     let script: bitcoin.Stack = [
-      toXOnly(tweakedTaprootKeyPair.publicKey),
+      toXOnly(Buffer.from(tweakedPublicKey, 'hex')),
       bitcoin.opcodes.OP_CHECKSIG,
       bitcoin.opcodes.OP_0,
       bitcoin.opcodes.OP_IF,
@@ -419,7 +421,7 @@ export const createEtchCommit = async ({
     const outputScript = bitcoin.script.compile(script)
 
     const inscriberInfo = bitcoin.payments.p2tr({
-      internalPubkey: toXOnly(tweakedTaprootKeyPair.publicKey),
+      internalPubkey: toXOnly(Buffer.from(tweakedPublicKey, 'hex')),
       scriptTree: { output: outputScript },
       network: provider.network,
     })
@@ -533,10 +535,12 @@ export const createEtchReveal = async ({
   receiverAddress,
   script,
   feeRate,
-  tweakedTaprootKeyPair,
+  //tweakedTaprootKeyPair,
+  tweakedPublicKey,
   provider,
   fee = 0,
   commitTxId,
+  account,
 }: {
   symbol: string
   cap: bigint
@@ -548,10 +552,12 @@ export const createEtchReveal = async ({
   receiverAddress: string
   script: Buffer
   feeRate: number
-  tweakedTaprootKeyPair: bitcoin.Signer
+  //tweakedTaprootKeyPair: bitcoin.Signer
+  tweakedPublicKey: string
   provider: Provider
   fee?: number
   commitTxId: string
+  account: Account
 }) => {
   try {
     if (!feeRate) {
@@ -581,7 +587,7 @@ export const createEtchReveal = async ({
     const p2pk_redeem = { output: script }
 
     const { output, witness } = bitcoin.payments.p2tr({
-      internalPubkey: toXOnly(tweakedTaprootKeyPair.publicKey),
+      internalPubkey: toXOnly(Buffer.from(tweakedPublicKey, 'hex')),
       scriptTree: p2pk_redeem,
       redeem: p2pk_redeem,
       network: provider.network,
@@ -633,15 +639,22 @@ export const createEtchReveal = async ({
         address: receiverAddress,
       })
     }
+    const formattedPsbtTx = await formatInputsToSign({
+      _psbt: psbt,
+      senderPublicKey: account.taproot.pubkey,
+      network: provider.network,
+    })
 
-    psbt.signInput(0, tweakedTaprootKeyPair)
-    psbt.finalizeInput(0)
+    return { psbt: formattedPsbtTx.toBase64() }
 
-    return {
-      psbt: psbt.toBase64(),
-      psbtHex: psbt.extractTransaction().toHex(),
-      fee: revealTxChange,
-    }
+    // psbt.signInput(0, tweakedTaprootKeyPair)
+    // psbt.finalizeInput(0)
+
+    // return {
+    //   psbt: psbt.toBase64(),
+    //   psbtHex: psbt.extractTransaction().toHex(),
+    //   fee: revealTxChange,
+    // }
   } catch (error) {
     throw new OylTransactionError(error)
   }
@@ -818,7 +831,7 @@ export const actualSendFee = async ({
   toAddress,
   amount,
   feeRate,
-  signer,
+  //signer,
 }: {
   gatheredUtxos: GatheredUtxos
   account: Account
@@ -828,7 +841,7 @@ export const actualSendFee = async ({
   toAddress: string
   amount: number
   feeRate?: number
-  signer: Signer
+  //signer: Signer
 }) => {
   if (!feeRate) {
     feeRate = (await provider.esplora.getFeeEstimates())['1']
@@ -912,14 +925,14 @@ export const actualMintFee = async ({
   runeId,
   provider,
   feeRate,
-  signer,
+  //signer,
 }: {
   gatheredUtxos: GatheredUtxos
   account: Account
   runeId: string
   provider: Provider
   feeRate?: number
-  signer: Signer
+  //signer: Signer
 }) => {
   if (!feeRate) {
     feeRate = (await provider.esplora.getFeeEstimates())['1']
@@ -993,23 +1006,25 @@ export const actualMintFee = async ({
 }
 
 export const actualEtchCommitFee = async ({
-  tweakedTaprootKeyPair,
-  taprootKeyPair,
+  //tweakedTaprootKeyPair,
+  tweakedPublicKey,
+  //taprootKeyPair,
   gatheredUtxos,
   account,
   runeName,
   provider,
   feeRate,
-  signer,
+  //signer,
 }: {
-  tweakedTaprootKeyPair: bitcoin.Signer
-  taprootKeyPair: bitcoin.Signer
+  //tweakedTaprootKeyPair: bitcoin.Signer
+  tweakedPublicKey: string
+  //taprootKeyPair: bitcoin.Signer
   gatheredUtxos: GatheredUtxos
   account: Account
   runeName: string
   provider: Provider
   feeRate?: number
-  signer: Signer
+  //signer: Signer
 }) => {
   if (!feeRate) {
     feeRate = (await provider.esplora.getFeeEstimates())['1']
@@ -1017,8 +1032,9 @@ export const actualEtchCommitFee = async ({
 
   const { psbt } = await createEtchCommit({
     gatheredUtxos,
-    taprootKeyPair,
-    tweakedTaprootKeyPair,
+    //taprootKeyPair,
+    //tweakedTaprootKeyPair,
+    tweakedPublicKey,
     runeName,
     account,
     provider,
@@ -1050,8 +1066,9 @@ export const actualEtchCommitFee = async ({
 
   const { psbt: finalPsbt } = await createEtchCommit({
     gatheredUtxos,
-    taprootKeyPair,
-    tweakedTaprootKeyPair,
+    //taprootKeyPair,
+    //tweakedTaprootKeyPair,
+    tweakedPublicKey,
     runeName,
     account,
     provider,
@@ -1086,8 +1103,9 @@ export const actualEtchCommitFee = async ({
 }
 
 export const actualEtchRevealFee = async ({
-  tweakedTaprootKeyPair,
-  taprootKeyPair,
+  //tweakedTaprootKeyPair,
+  tweakedPublicKey,
+  //taprootKeyPair,
   symbol,
   cap,
   premine,
@@ -1101,10 +1119,11 @@ export const actualEtchRevealFee = async ({
   account,
   provider,
   feeRate,
-  signer,
+  //signer,
 }: {
-  tweakedTaprootKeyPair: bitcoin.Signer
-  taprootKeyPair: bitcoin.Signer
+  //tweakedTaprootKeyPair: bitcoin.Signer
+  tweakedPublicKey: string
+  //taprootKeyPair: bitcoin.Signer
   symbol: string
   cap: bigint
   premine: bigint
@@ -1118,7 +1137,7 @@ export const actualEtchRevealFee = async ({
   account: Account
   provider: Provider
   feeRate?: number
-  signer: Signer
+  //signer: Signer
 }) => {
   if (!feeRate) {
     feeRate = (await provider.esplora.getFeeEstimates())['1']
@@ -1128,7 +1147,8 @@ export const actualEtchRevealFee = async ({
     commitTxId,
     receiverAddress,
     script,
-    tweakedTaprootKeyPair,
+    //tweakedTaprootKeyPair,
+    tweakedPublicKey,
     symbol,
     cap,
     premine,
@@ -1138,6 +1158,7 @@ export const actualEtchRevealFee = async ({
     runeName,
     provider,
     feeRate,
+    account,
   })
 
   const { fee: estimatedFee } = await getEstimatedFee({
@@ -1167,7 +1188,8 @@ export const actualEtchRevealFee = async ({
     commitTxId,
     receiverAddress,
     script,
-    tweakedTaprootKeyPair,
+    //tweakedTaprootKeyPair,
+    tweakedPublicKey,
     symbol,
     cap,
     premine,
@@ -1178,6 +1200,7 @@ export const actualEtchRevealFee = async ({
     provider,
     feeRate,
     fee: estimatedFee,
+    account,
   })
 
   const { fee: finalFee, vsize } = await getEstimatedFee({
@@ -1239,7 +1262,7 @@ export const send = async ({
     toAddress,
     inscriptionAddress,
     feeRate,
-    signer,
+    //signer,
   })
 
   const { psbt: finalPsbt } = await createSendPsbt({
@@ -1287,7 +1310,7 @@ export const mint = async ({
     runeId,
     provider,
     feeRate,
-    signer,
+    //signer,
   })
 
   const { psbt: finalPsbt } = await createMintPsbt({
@@ -1332,21 +1355,24 @@ export const etchCommit = async ({
       network: provider.network,
     }
   )
+
+  const tweakedPublicKey = tweakedTaprootKeyPair.publicKey.toString('hex')
+
   const { fee: commitFee } = await actualEtchCommitFee({
     gatheredUtxos,
-    taprootKeyPair: signer.taprootKeyPair,
-    tweakedTaprootKeyPair,
+    //taprootKeyPair: signer.taprootKeyPair,
+    tweakedPublicKey,
     runeName,
     account,
     provider,
     feeRate,
-    signer,
+    //signer,
   })
 
   const { psbt: finalPsbt, script } = await createEtchCommit({
     gatheredUtxos,
-    taprootKeyPair: signer.taprootKeyPair,
-    tweakedTaprootKeyPair,
+    //taprootKeyPair: signer.taprootKeyPair,
+    tweakedPublicKey,
     runeName,
     account,
     provider,
@@ -1402,9 +1428,12 @@ export const etchReveal = async ({
     }
   )
 
+  const tweakedPublicKey = tweakedTaprootKeyPair.publicKey.toString('hex')
+
   const { fee } = await actualEtchRevealFee({
-    taprootKeyPair: signer.taprootKeyPair,
-    tweakedTaprootKeyPair,
+    //taprootKeyPair: signer.taprootKeyPair,
+    //tweakedTaprootKeyPair,
+    tweakedPublicKey,
     receiverAddress: account.taproot.address,
     commitTxId,
     script: Buffer.from(script, 'hex'),
@@ -1418,11 +1447,12 @@ export const etchReveal = async ({
     account,
     provider,
     feeRate,
-    signer,
+    // signer,
   })
 
   const { psbt: finalRevealPsbt } = await createEtchReveal({
-    tweakedTaprootKeyPair,
+    //tweakedTaprootKeyPair,
+    tweakedPublicKey,
     receiverAddress: account.taproot.address,
     commitTxId,
     script: Buffer.from(script, 'hex'),
@@ -1436,6 +1466,7 @@ export const etchReveal = async ({
     provider,
     feeRate,
     fee,
+    account,
   })
 
   const { signedPsbt: revealSignedPsbt } = await signer.signAllInputs({

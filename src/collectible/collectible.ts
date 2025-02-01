@@ -266,7 +266,7 @@ export const send = async ({
         inscriptionAddress,
         toAddress,
         feeRate,
-        signer,
+        // signer,
       })
     ).fee
   }
@@ -302,7 +302,7 @@ export const actualFee = async ({
   inscriptionAddress = account.taproot.address,
   toAddress,
   feeRate,
-  signer,
+  //signer,
 }: {
   gatheredUtxos: GatheredUtxos
   account: Account
@@ -311,7 +311,7 @@ export const actualFee = async ({
   inscriptionAddress?: string
   toAddress: string
   feeRate?: number
-  signer: Signer
+  //signer: Signer
 }) => {
   const { psbt } = await createPsbt({
     gatheredUtxos,
