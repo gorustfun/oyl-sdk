@@ -1469,8 +1469,13 @@ export const etchReveal = async ({
     account,
   })
 
+  const finalRevealPsbtExtracted = bitcoin.Psbt.fromBase64(finalRevealPsbt, { network: provider.network })
+  
+  finalRevealPsbtExtracted.signInput(0, tweakedTaprootKeyPair)
+  finalRevealPsbtExtracted.finalizeInput(0)
+
   const { signedPsbt: revealSignedPsbt } = await signer.signAllInputs({
-    rawPsbt: finalRevealPsbt,
+    rawPsbt: finalRevealPsbtExtracted.toBase64(),
     finalize: true,
   })
 
