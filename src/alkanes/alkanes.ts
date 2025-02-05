@@ -171,14 +171,12 @@ export const actualExecuteFee = async ({
   calldata,
   provider,
   feeRate,
-  // signer,
 }: {
   gatheredUtxos: GatheredUtxos
   account: Account
   calldata: bigint[]
   provider: Provider
   feeRate: number
-  //signer: Signer
 }) => {
   if (!feeRate) {
     feeRate = (await provider.esplora.getFeeEstimates())['1']
@@ -198,23 +196,6 @@ export const actualExecuteFee = async ({
     provider,
   })
 
-  // const { signedPsbt } = await signer.signAllInputs({
-  //   rawPsbt: psbt,
-  //   finalize: true,
-  // })
-
-  // let rawPsbt = bitcoin.Psbt.fromBase64(signedPsbt, {
-  //   network: account.network,
-  // })
-  //   .extractTransaction()
-  //   .toHex()
-
-  // const vsize = (
-  //   await provider.sandshrew.bitcoindRpc.testMemPoolAccept([rawPsbt])
-  // )[0].vsize
-
-  // const correctFee = vsize * feeRate
-
   const { psbt: finalPsbt } = await createExecutePsbt({
     gatheredUtxos,
     account,
@@ -229,23 +210,6 @@ export const actualExecuteFee = async ({
     psbt: finalPsbt,
     provider,
   })
-
-  // const { signedPsbt: finalSignedPsbt } = await signer.signAllInputs({
-  //   rawPsbt: finalPsbt,
-  //   finalize: true,
-  // })
-
-  // let finalRawPsbt = bitcoin.Psbt.fromBase64(finalSignedPsbt, {
-  //   network: account.network,
-  // })
-  //   .extractTransaction()
-  //   .toHex()
-
-  // const finalVsize = (
-  //   await provider.sandshrew.bitcoindRpc.testMemPoolAccept([finalRawPsbt])
-  // )[0].vsize
-
-  // const finalFee = finalVsize * feeRate
 
   return { fee: finalFee, vsize }
 }
@@ -271,7 +235,6 @@ export const execute = async ({
     calldata,
     provider,
     feeRate,
-    // signer,
   })
 
   const { psbt: finalPsbt } = await createExecutePsbt({
@@ -298,7 +261,6 @@ export const execute = async ({
 export const createDeployCommit = async ({
   payload,
   gatheredUtxos,
-  // tweakedTaprootKeyPair,
   tweakedPublicKey,
   account,
   provider,
@@ -307,7 +269,6 @@ export const createDeployCommit = async ({
 }: {
   payload: AlkanesPayload
   gatheredUtxos: GatheredUtxos
-  // tweakedTaprootKeyPair: bitcoin.Signer
   tweakedPublicKey: string
   account: Account
   provider: Provider
@@ -449,7 +410,6 @@ export const createDeployReveal = async ({
   receiverAddress,
   script,
   feeRate,
-  // tweakedTaprootKeyPair,
   tweakedPublicKey,
   provider,
   fee = 0,
@@ -459,7 +419,6 @@ export const createDeployReveal = async ({
   receiverAddress: string
   script: Buffer
   feeRate: number
-  // tweakedTaprootKeyPair: bitcoin.Signer
   tweakedPublicKey: string
   provider: Provider
   fee?: number
@@ -621,7 +580,6 @@ export const findAlkaneUtxos = async ({
 
 export const actualTransactRevealFee = async ({
   calldata,
-  // tweakedTaprootKeyPair,
   tweakedPublicKey,
   commitTxId,
   receiverAddress,
@@ -630,7 +588,6 @@ export const actualTransactRevealFee = async ({
   feeRate,
 }: {
   calldata: bigint[]
-  // tweakedTaprootKeyPair: bitcoin.Signer
   tweakedPublicKey: string
   commitTxId: string
   receiverAddress: string
@@ -647,7 +604,6 @@ export const actualTransactRevealFee = async ({
     commitTxId,
     receiverAddress,
     script,
-    // tweakedTaprootKeyPair,
     tweakedPublicKey,
     provider,
     feeRate,
@@ -659,26 +615,11 @@ export const actualTransactRevealFee = async ({
     provider,
   })
 
-  // let rawPsbt = bitcoin.Psbt.fromBase64(initReveal, {
-  //   network: provider.network,
-  // })
-  // rawPsbt.signInput(0, tweakedTaprootKeyPair)
-  // rawPsbt.finalizeInput(0)
-
-  // const rawSignedPsbt = rawPsbt.extractTransaction().toHex()
-
-  // const vsize = (
-  //   await provider.sandshrew.bitcoindRpc.testMemPoolAccept([rawSignedPsbt])
-  // )[0].vsize
-
-  // const correctFee = vsize * feeRate
-
   const { psbt: finalReveal } = await createTransactReveal({
     calldata,
     commitTxId,
     receiverAddress,
     script,
-    // tweakedTaprootKeyPair,
     tweakedPublicKey,
     provider,
     feeRate,
@@ -690,20 +631,6 @@ export const actualTransactRevealFee = async ({
     psbt: finalReveal,
     provider,
   })
-
-  // let finalPsbt = bitcoin.Psbt.fromBase64(finalReveal, {
-  //   network: provider.network,
-  // })
-  // finalPsbt.signInput(0, tweakedTaprootKeyPair)
-  // finalPsbt.finalizeInput(0)
-
-  // const finalSignedPsbt = rawPsbt.extractTransaction().toHex()
-
-  // const finalVsize = (
-  //   await provider.sandshrew.bitcoindRpc.testMemPoolAccept([finalSignedPsbt])
-  // )[0].vsize
-
-  // const finalFee = finalVsize * feeRate
 
   return { fee: finalFee, vsize }
 }
@@ -737,7 +664,6 @@ export const executeReveal = async ({
 
   const { fee } = await actualTransactRevealFee({
     calldata,
-    // tweakedTaprootKeyPair,
     tweakedPublicKey,
     receiverAddress: account.taproot.address,
     commitTxId,
@@ -748,7 +674,6 @@ export const executeReveal = async ({
 
   const { psbt: finalRevealPsbt } = await createTransactReveal({
     calldata,
-    // tweakedTaprootKeyPair,
     tweakedPublicKey,
     receiverAddress: account.taproot.address,
     commitTxId,
@@ -779,7 +704,6 @@ export const createTransactReveal = async ({
   receiverAddress,
   script,
   feeRate,
-  //tweakedTaprootKeyPair,
   tweakedPublicKey,
   provider,
   fee = 0,
@@ -789,7 +713,6 @@ export const createTransactReveal = async ({
   receiverAddress: string
   script: Buffer
   feeRate: number
-  //tweakedTaprootKeyPair: bitcoin.Signer
   tweakedPublicKey: string
   provider: Provider
   fee?: number
@@ -905,24 +828,20 @@ export const deployCommit = async ({
     }
   )
 
-  // Get just the tweaked public key as hex string
   const tweakedPublicKey = tweakedTaprootKeyPair.publicKey.toString('hex')
 
   const { fee: commitFee } = await actualDeployCommitFee({
     payload,
     gatheredUtxos,
-    //tweakedTaprootKeyPair,
     tweakedPublicKey,
     account,
     provider,
     feeRate,
-    // signer,
   })
 
   const { psbt: finalPsbt, script } = await createDeployCommit({
     payload,
     gatheredUtxos,
-    // tweakedTaprootKeyPair,
     tweakedPublicKey,
     account,
     provider,

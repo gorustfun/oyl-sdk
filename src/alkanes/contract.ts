@@ -47,22 +47,18 @@ export const contractDeployment = async ({
 
 export const actualDeployCommitFee = async ({
   payload,
-  //tweakedTaprootKeyPair,
   tweakedPublicKey,
   gatheredUtxos,
   account,
   provider,
   feeRate,
-  // signer,
 }: {
   payload: AlkanesPayload
-  // tweakedTaprootKeyPair: bitcoin.Signer
   tweakedPublicKey: string
   gatheredUtxos: GatheredUtxos
   account: Account
   provider: Provider
   feeRate?: number
-  // signer: Signer
 }) => {
   if (!feeRate) {
     feeRate = (await provider.esplora.getFeeEstimates())['1']
@@ -71,7 +67,6 @@ export const actualDeployCommitFee = async ({
   const { psbt } = await createDeployCommit({
     payload,
     gatheredUtxos,
-    // tweakedTaprootKeyPair,
     tweakedPublicKey,
     account,
     provider,
@@ -84,27 +79,9 @@ export const actualDeployCommitFee = async ({
     provider,
   })
 
-  // const { signedPsbt } = await signer.signAllInputs({
-  //   rawPsbt: psbt,
-  //   finalize: true,
-  // })
-
-  // let rawPsbt = bitcoin.Psbt.fromBase64(signedPsbt, {
-  //   network: provider.network,
-  // })
-
-  // const signedHexPsbt = rawPsbt.extractTransaction().toHex()
-
-  // const vsize = (
-  //   await provider.sandshrew.bitcoindRpc.testMemPoolAccept([signedHexPsbt])
-  // )[0].vsize
-
-  // const correctFee = vsize * feeRate
-
   const { psbt: finalPsbt } = await createDeployCommit({
     payload,
     gatheredUtxos,
-    // tweakedTaprootKeyPair,
     tweakedPublicKey,
     account,
     provider,
@@ -117,23 +94,6 @@ export const actualDeployCommitFee = async ({
     psbt: finalPsbt,
     provider,
   })
-
-  // const { signedPsbt: signedAll } = await signer.signAllInputs({
-  //   rawPsbt: finalPsbt,
-  //   finalize: true,
-  // })
-
-  // let finalRawPsbt = bitcoin.Psbt.fromBase64(signedAll, {
-  //   network: provider.network,
-  // })
-
-  // const finalSignedHexPsbt = finalRawPsbt.extractTransaction().toHex()
-
-  // const finalVsize = (
-  //   await provider.sandshrew.bitcoindRpc.testMemPoolAccept([finalSignedHexPsbt])
-  // )[0].vsize
-
-  // const finalFee = finalVsize * feeRate
 
   return { fee: finalFee, vsize }
 }
@@ -257,19 +217,16 @@ export const deployReveal = async ({
 
   const { fee } = await actualDeployRevealFee({
     createReserveNumber,
-    // tweakedTaprootKeyPair,
     tweakedPublicKey,
     receiverAddress: account.taproot.address,
     commitTxId,
     script: Buffer.from(script, 'hex'),
     provider,
     feeRate,
-    //signer,
   })
 
   const { psbt: finalRevealPsbt } = await createDeployReveal({
     createReserveNumber,
-    // tweakedTaprootKeyPair,
     tweakedPublicKey,
     receiverAddress: account.taproot.address,
     commitTxId,

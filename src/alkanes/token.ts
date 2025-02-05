@@ -58,8 +58,6 @@ export const tokenDeployment = async ({
   return { ...reveal, commitTx: txId }
 }
 
-
-
 export const createSendPsbt = async ({
   gatheredUtxos,
   account,
@@ -284,7 +282,6 @@ export const actualSendFee = async ({
   toAddress,
   amount,
   feeRate,
-  // signer,
 }: {
   gatheredUtxos: GatheredUtxos
   account: Account
@@ -293,7 +290,6 @@ export const actualSendFee = async ({
   toAddress: string
   amount: number
   feeRate?: number
-  // signer: Signer
 }) => {
   if (!feeRate) {
     feeRate = (await provider.esplora.getFeeEstimates())['1']
@@ -315,23 +311,6 @@ export const actualSendFee = async ({
     provider,
   })
 
-  // const { signedPsbt } = await signer.signAllInputs({
-  //   rawPsbt: psbt,
-  //   finalize: true,
-  // })
-
-  // let rawPsbt = bitcoin.Psbt.fromBase64(signedPsbt, {
-  //   network: account.network,
-  // })
-
-  // const signedHexPsbt = rawPsbt.extractTransaction().toHex()
-
-  // const vsize = (
-  //   await provider.sandshrew.bitcoindRpc.testMemPoolAccept([signedHexPsbt])
-  // )[0].vsize
-
-  // const correctFee = vsize * feeRate
-
   const { psbt: finalPsbt } = await createSendPsbt({
     gatheredUtxos,
     account,
@@ -348,23 +327,6 @@ export const actualSendFee = async ({
     psbt: finalPsbt,
     provider,
   })
-
-  // const { signedPsbt: signedAll } = await signer.signAllInputs({
-  //   rawPsbt: finalPsbt,
-  //   finalize: true,
-  // })
-
-  // let finalRawPsbt = bitcoin.Psbt.fromBase64(signedAll, {
-  //   network: account.network,
-  // })
-
-  // const finalSignedHexPsbt = finalRawPsbt.extractTransaction().toHex()
-
-  // const finalVsize = (
-  //   await provider.sandshrew.bitcoindRpc.testMemPoolAccept([finalSignedHexPsbt])
-  // )[0].vsize
-
-  // const finalFee = finalVsize * feeRate
 
   return { fee: finalFee, vsize }
 }
@@ -396,7 +358,6 @@ export const send = async ({
     provider,
     toAddress,
     feeRate,
-    // signer,
   })
 
   const { psbt: finalPsbt } = await createSendPsbt({

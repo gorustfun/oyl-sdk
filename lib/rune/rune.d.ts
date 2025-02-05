@@ -57,7 +57,7 @@ export declare const createEtchReveal: ({ symbol, cap, premine, perMintAmount, t
     divisibility: number;
     runeName: string;
     receiverAddress: string;
-    script: Buffer;
+    script: string;
     feeRate: number;
     tweakedPublicKey: string;
     provider: Provider;
@@ -128,7 +128,7 @@ export declare const actualEtchRevealFee: ({ tweakedPublicKey, symbol, cap, prem
     runeName: string;
     commitTxId: string;
     receiverAddress: string;
-    script: Buffer;
+    script: string;
     account: Account;
     provider: Provider;
     feeRate?: number;
