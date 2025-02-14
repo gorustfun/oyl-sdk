@@ -29,6 +29,13 @@ export const DEFAULT_PROVIDER = {
     network: bitcoin.networks.regtest,
     networkType: 'regtest',
   }),
+  signet: new Provider({
+    url: 'https://signet.sandshrew.io',
+    projectId: 'lasereyes',
+    version: 'v2',
+    network: bitcoin.networks.testnet,
+    networkType: 'testnet',
+  }),
 }
 
 export const REGTEST_FAUCET = {

@@ -4,6 +4,7 @@ export declare const DEFAULT_PROVIDER: {
     bitcoin: Provider;
     regtest: Provider;
     oylnet: Provider;
+    signet: Provider;
 };
 export declare const REGTEST_FAUCET: {
     mnemonic: string;

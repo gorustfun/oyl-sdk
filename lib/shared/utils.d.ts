@@ -1,7 +1,7 @@
 /// <reference types="node" />
 /// <reference types="node" />
 import * as bitcoin from 'bitcoinjs-lib';
-import { AddressType, DecodedCBOR, FormattedUtxo, IBlockchainInfoUTXO, Network, RuneUtxo, ToSignInput, TxInput, UnspentOutput, Utxo } from './interface';
+import { AddressType, DecodedCBOR, FormattedUtxo, GatheredUtxos, IBlockchainInfoUTXO, Network, RuneUtxo, ToSignInput, TxInput, UnspentOutput, Utxo } from './interface';
 import { SandshrewBitcoinClient } from '../rpclient/sandshrew';
 import { EsploraRpc } from '../rpclient/esplora';
 import { Provider } from '../provider/provider';
@@ -130,3 +130,16 @@ export declare function findXAmountOfSats(utxos: FormattedUtxo[], target: number
 };
 export declare function decodeCBOR(hex: string): DecodedCBOR;
 export declare const getVSize: (data: Buffer) => number;
+interface CalculateUtxoFeesParams {
+    gatheredUtxos: GatheredUtxos;
+    feeRate?: number;
+    fee?: number;
+}
+export declare const calculateUtxoFeesAndGather: ({ gatheredUtxos, feeRate, fee, }: CalculateUtxoFeesParams) => {
+    updatedUtxos: {
+        utxos: FormattedUtxo[];
+        totalAmount: number;
+    };
+    finalFee: number;
+};
+export {};

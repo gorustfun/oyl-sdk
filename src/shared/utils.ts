@@ -6,6 +6,7 @@ import {
   AlkanesPayload,
   DecodedCBOR,
   FormattedUtxo,
+  GatheredUtxos,
   IBlockchainInfoUTXO,
   Network,
   RuneUtxo,
@@ -24,6 +25,8 @@ import { addressFormats } from '@sadoprotocol/ordit-sdk'
 import { encodeRunestone, RunestoneSpec } from '@magiceden-oss/runestone-lib'
 import { AddressKey } from '@account/account'
 import * as CBOR from 'cbor-x'
+import { OylTransactionError } from 'errors'
+import { minimumFee } from '@btc/btc'
 
 bitcoin.initEccLib(ecc)
 
@@ -771,3 +774,55 @@ export const getVSize = (data: Buffer) => {
   }
   return Math.ceil(totalSize / 4)
 }
+
+
+
+
+
+interface CalculateUtxoFeesParams {
+  gatheredUtxos: GatheredUtxos
+  feeRate?: number
+  fee?: number
+}
+
+export const calculateUtxoFeesAndGather = ({
+  gatheredUtxos,
+  feeRate,
+  fee,
+}: CalculateUtxoFeesParams) => {
+  const originalGatheredUtxos = gatheredUtxos;
+
+  const minFee = minimumFee({
+    taprootInputCount: 2,
+    nonTaprootInputCount: 0,
+    outputCount: 3,
+  });
+  
+  const calculatedFee = minFee * feeRate < 250 ? 250 : minFee * feeRate;
+  let finalFee = fee ? fee : calculatedFee;
+
+  let updatedUtxos = findXAmountOfSats(
+    originalGatheredUtxos.utxos,
+    Number(finalFee) + Number(inscriptionSats)
+  );
+
+  if (updatedUtxos.utxos.length > 1) {
+    const txSize = minimumFee({
+      taprootInputCount: updatedUtxos.utxos.length,
+      nonTaprootInputCount: 0,
+      outputCount: 3,
+    });
+
+    finalFee = Math.max(txSize * feeRate, 250);
+    updatedUtxos = findXAmountOfSats(
+      originalGatheredUtxos.utxos,
+      Number(finalFee) + Number(inscriptionSats)
+    );
+  }
+
+  if (updatedUtxos.totalAmount < finalFee + inscriptionSats * 2) {
+    throw new OylTransactionError(Error('Insufficient Balance'));
+  }
+
+  return { updatedUtxos, finalFee };
+};
