@@ -1,10 +1,12 @@
+import { AllPoolsDetailsResult } from '../amm/factory';
 export declare const stripHexPrefix: (s: string) => string;
+export interface AlkaneId {
+    block: string;
+    tx: string;
+}
 export interface Rune {
     rune: {
-        id: {
-            block: string;
-            tx: string;
-        };
+        id: AlkaneId;
         name: string;
         spacedName: string;
         divisibility: number;
@@ -36,10 +38,7 @@ interface AlkaneSimulateRequest {
     block: string;
     height: string;
     txindex: number;
-    target: {
-        block: string;
-        tx: string;
-    };
+    target: AlkaneId;
     inputs: string[];
     pointer: number;
     refundPointer: number;
@@ -72,20 +71,13 @@ export declare class AlkanesRpc {
         vout: number;
         txid: string;
     }): Promise<any>;
-    parsePoolInfo(hexData: string): {
-        tokenA: {
-            block: string;
-            tx: string;
-        };
-        tokenB: {
-            block: string;
-            tx: string;
-        };
-        reserveA: string;
-        reserveB: string;
-    };
     simulate(request: Partial<AlkaneSimulateRequest>, decoder?: any): Promise<any>;
-    simulatePoolInfo(request: AlkaneSimulateRequest): Promise<any>;
+    parseSimulateReturn(v: any): {
+        string: string;
+        bytes: string;
+        le: string;
+        be: string;
+    };
     getAlkanesByOutpoint({ txid, vout, protocolTag, }: {
         txid: string;
         vout: number;
@@ -99,11 +91,8 @@ export declare class AlkanesRpc {
         limit: number;
         offset?: number;
     }): Promise<AlkaneToken[]>;
-    parseSimulateReturn(v: any): {
-        string: string;
-        bytes: string;
-        le: string;
-        be: string;
-    };
+    getAllPools({ factoryId }: {
+        factoryId: AlkaneId;
+    }): Promise<AllPoolsDetailsResult>;
 }
 export {};

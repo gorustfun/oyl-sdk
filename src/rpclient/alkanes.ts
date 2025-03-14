@@ -1,12 +1,17 @@
 import fetch from 'node-fetch'
 import asyncPool from 'tiny-async-pool'
+import { AlkanesAMMPoolFactoryDecoder, AllPoolsDetailsResult } from '../amm/factory'
 
 export const stripHexPrefix = (s: string): string =>
   s.substr(0, 2) === '0x' ? s.substr(2) : s
 
+export interface AlkaneId {
+  block: string
+  tx: string
+}
 export interface Rune {
   rune: {
-    id: { block: string; tx: string }
+    id: AlkaneId
     name: string
     spacedName: string
     divisibility: number
@@ -26,17 +31,13 @@ export interface AlkanesResponse {
   outpoints: Outpoint[]
   balanceSheet: []
 }
-
 interface AlkaneSimulateRequest {
   alkanes: any[]
   transaction: string
   block: string
   height: string
   txindex: number
-  target: {
-    block: string
-    tx: string
-  }
+  target: AlkaneId
   inputs: string[]
   pointer: number
   refundPointer: number
@@ -175,47 +176,6 @@ export class AlkanesRpc {
     return await ret
   }
 
-  parsePoolInfo(hexData: string) {
-    function parseLittleEndian(hexString: string): string[] {
-      // Remove the "0x" prefix if present
-      if (hexString.startsWith('0x')) {
-        hexString = hexString.slice(2)
-      }
-      // Ensure the input length is a multiple of 32 hex chars (128-bit each)
-      if (hexString.length % 32 !== 0) {
-        throw new Error(
-          'Invalid hex length. Expected multiples of 128-bit (32 hex chars).'
-        )
-      }
-      // Function to convert a single 128-bit segment
-      const convertSegment = (segment: string): bigint => {
-        const littleEndianHex = segment.match(/.{2}/g)?.reverse()?.join('')
-        if (!littleEndianHex) {
-          throw new Error('Failed to process hex segment.')
-        }
-        return BigInt('0x' + littleEndianHex)
-      }
-      // Split into 128-bit (32 hex character) chunks
-      const chunks = hexString.match(/.{32}/g) || []
-      const parsedValues = chunks.map(convertSegment)
-      return parsedValues.map((num) => num.toString())
-    }
-    // Parse the data
-    const parsedData = parseLittleEndian(hexData)
-    return {
-      tokenA: {
-        block: parsedData[0],
-        tx: parsedData[1],
-      },
-      tokenB: {
-        block: parsedData[2],
-        tx: parsedData[3],
-      },
-      reserveA: parsedData[4],
-      reserveB: parsedData[5],
-    }
-  }
-
   async simulate(request: Partial<AlkaneSimulateRequest>, decoder?: any) {
     const ret = await this._call('alkanes_simulate', [
       {
@@ -241,6 +201,38 @@ export class AlkanesRpc {
 
     return ret
   }
+
+  parseSimulateReturn(v: any) {
+    if (v === '0x') {
+      return undefined
+    }
+    const stripHexPrefix = (v: string) => (v.startsWith('0x') ? v.slice(2) : v)
+    const addHexPrefix = (v: string) => '0x' + stripHexPrefix(v)
+
+    let decodedString: string
+    try {
+      decodedString = Buffer.from(stripHexPrefix(v), 'hex').toString('utf8')
+      if (/[\uFFFD]/.test(decodedString)) {
+        throw new Error('Invalid UTF-8 string')
+      }
+    } catch (err) {
+      decodedString = addHexPrefix(v)
+    }
+
+    return {
+      string: decodedString,
+      bytes: addHexPrefix(v),
+      le: BigInt(
+        addHexPrefix(
+          Buffer.from(
+            Array.from(Buffer.from(stripHexPrefix(v), 'hex')).reverse()
+          ).toString('hex')
+        )
+      ).toString(),
+      be: BigInt(addHexPrefix(v)).toString(),
+    }
+  }
+
   // @dev WIP
   // async meta(request: Partial<AlkaneSimulateRequest>, decoder?: any) {
   //   const ret = await this._call('alkanes___meta', [
@@ -267,13 +259,6 @@ export class AlkanesRpc {
 
   //   return ret
   // }
-
-  async simulatePoolInfo(request: AlkaneSimulateRequest) {
-    const ret = await this._call('alkanes_simulate', [request])
-    const parsedPool = this.parsePoolInfo(ret.execution.data)
-    ret.parsed = parsedPool
-    return ret
-  }
 
   async getAlkanesByOutpoint({
     txid,
@@ -358,6 +343,7 @@ export class AlkanesRpc {
     }
     return alkaneData
   }
+
   async getAlkanes({
     limit,
     offset = 0,
@@ -475,34 +461,17 @@ export class AlkanesRpc {
     return results
   }
 
-  parseSimulateReturn(v: any) {
-    if (v === '0x') {
-      return undefined
-    }
-    const stripHexPrefix = (v: string) => (v.startsWith('0x') ? v.slice(2) : v)
-    const addHexPrefix = (v: string) => '0x' + stripHexPrefix(v)
-
-    let decodedString: string
-    try {
-      decodedString = Buffer.from(stripHexPrefix(v), 'hex').toString('utf8')
-      if (/[\uFFFD]/.test(decodedString)) {
-        throw new Error('Invalid UTF-8 string')
-      }
-    } catch (err) {
-      decodedString = addHexPrefix(v)
-    }
-
-    return {
-      string: decodedString,
-      bytes: addHexPrefix(v),
-      le: BigInt(
-        addHexPrefix(
-          Buffer.from(
-            Array.from(Buffer.from(stripHexPrefix(v), 'hex')).reverse()
-          ).toString('hex')
-        )
-      ).toString(),
-      be: BigInt(addHexPrefix(v)).toString(),
-    }
+  async getAllPools({
+    factoryId
+  }: {
+    factoryId: AlkaneId
+  }): Promise<AllPoolsDetailsResult> {
+    const request: Partial<AlkaneSimulateRequest> = {
+      target: factoryId,
+      inputs: ['3'],
+      alkanes: [],
+    };
+  
+    return await this.simulate(request, AlkanesAMMPoolFactoryDecoder.decodeSimulation);
   }
 }
