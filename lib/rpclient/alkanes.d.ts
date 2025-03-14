@@ -6,7 +6,10 @@ export interface AlkaneId {
 }
 export interface Rune {
     rune: {
-        id: AlkaneId;
+        id: {
+            block: string;
+            tx: string;
+        };
         name: string;
         spacedName: string;
         divisibility: number;
@@ -38,7 +41,10 @@ interface AlkaneSimulateRequest {
     block: string;
     height: string;
     txindex: number;
-    target: AlkaneId;
+    target: {
+        block: string;
+        tx: string;
+    };
     inputs: string[];
     pointer: number;
     refundPointer: number;
@@ -91,8 +97,9 @@ export declare class AlkanesRpc {
         limit: number;
         offset?: number;
     }): Promise<AlkaneToken[]>;
-    getAllPools({ factoryId }: {
-        factoryId: AlkaneId;
+    getAllPools({ block, tx, }: {
+        block: string;
+        tx: string;
     }): Promise<AllPoolsDetailsResult>;
 }
 export {};

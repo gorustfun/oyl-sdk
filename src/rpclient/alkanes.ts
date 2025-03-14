@@ -1,6 +1,7 @@
 import fetch from 'node-fetch'
 import asyncPool from 'tiny-async-pool'
 import { AlkanesAMMPoolFactoryDecoder, AllPoolsDetailsResult } from '../amm/factory'
+import { AlkanesAMMPoolDecoder, PoolDetailsResult } from '../amm/pool'
 
 export const stripHexPrefix = (s: string): string =>
   s.substr(0, 2) === '0x' ? s.substr(2) : s
@@ -11,7 +12,7 @@ export interface AlkaneId {
 }
 export interface Rune {
   rune: {
-    id: AlkaneId
+    id: { block: string; tx: string }
     name: string
     spacedName: string
     divisibility: number
@@ -37,7 +38,10 @@ interface AlkaneSimulateRequest {
   block: string
   height: string
   txindex: number
-  target: AlkaneId
+  target: {
+    block: string
+    tx: string
+  }
   inputs: string[]
   pointer: number
   refundPointer: number
@@ -462,16 +466,42 @@ export class AlkanesRpc {
   }
 
   async getAllPools({
-    factoryId
+    block,
+    tx,
   }: {
-    factoryId: AlkaneId
+    block: string
+    tx: string
   }): Promise<AllPoolsDetailsResult> {
     const request: Partial<AlkaneSimulateRequest> = {
-      target: factoryId,
+      target: { block, tx },
       inputs: ['3'],
       alkanes: [],
     };
-  
-    return await this.simulate(request, AlkanesAMMPoolFactoryDecoder.decodeSimulation);
+
+    const poolsWithDetails: (PoolDetailsResult & { poolId: AlkaneId })[] = []
+
+    const { parsed } = await this.simulate(request, AlkanesAMMPoolFactoryDecoder.decodeSimulation);
+
+    for (const poolId of parsed.pools) {
+      const poolDetailsRequest = {
+        target: poolId,
+        inputs: [
+          '999',  // opcode 999 = pool_details
+        ],
+        alkanes: [],
+      };
+      const { parsed: poolDetails } = await this.simulate(poolDetailsRequest, AlkanesAMMPoolDecoder.decodeSimulation);
+      if (poolDetails) {
+        poolsWithDetails.push({
+          ...poolDetails,
+          poolId,
+        })
+      }
+    }
+
+    return {
+      count: poolsWithDetails.length,
+      pools: poolsWithDetails,
+    };
   }
 }
