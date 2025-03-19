@@ -187,6 +187,7 @@ export const alkaneTokenDeploy = new Command('new-token')
             'hex'
           )
       ),
+      BigInt(0),
       BigInt(
         '0x' +
           Buffer.from(
