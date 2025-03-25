@@ -59,7 +59,8 @@ interface AlkaneToken {
 export declare class AlkanesRpc {
     alkanesUrl: string;
     esplora: EsploraRpc;
-    constructor(url: string);
+    private metashrewUrl;
+    constructor(url: string, metashrewUrl?: string);
     _call(method: string, params?: any[]): Promise<any>;
     getAlkanesByHeight({ height, protocolTag, }: {
         height: number;

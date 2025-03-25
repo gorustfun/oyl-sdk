@@ -1,6 +1,7 @@
 import fetch from 'node-fetch'
 import asyncPool from 'tiny-async-pool'
 import { EsploraRpc, EsploraUtxo } from './esplora'
+import { AlkanesRpc as AlkanesRpcLib } from 'alkanes/lib/rpc'
 
 export const stripHexPrefix = (s: string): string =>
   s.substr(0, 2) === '0x' ? s.substr(2) : s
@@ -69,19 +70,50 @@ const opcodesHRV: string[] = [
 export class AlkanesRpc {
   public alkanesUrl: string
   public esplora: EsploraRpc
+  private metashrewUrl: string | null
 
-  constructor(url: string) {
+  constructor(url: string, metashrewUrl?: string) {
     this.alkanesUrl = url
     this.esplora = new EsploraRpc(url)
+    this.metashrewUrl = metashrewUrl || null
   }
 
   async _call(method: string, params = []) {
+    // If metashrewUrl is provided, use it directly
+    const useUrl = this.metashrewUrl || this.alkanesUrl
+    
+    // Convert method name if using metashrew directly
+    let requestMethod = method
+    let requestParams = params
+    
+    if (this.metashrewUrl) {
+      // For metashrew, we need to convert the method name
+      const split = method.split('_')
+      if (split.length === 1) {
+        // If no namespace is provided, use metashrew_view
+        requestMethod = 'metashrew_view'
+        // For metashrew_view, the first param is the method name, followed by the original params
+        requestParams = [method, ...params]
+      } else if (split[0] === 'alkanes') {
+        // If the namespace is 'alkanes', use metashrew_view with the method part
+        const alkanesRpc = new AlkanesRpcLib({
+          baseUrl: this.metashrewUrl,
+        })
+
+        const result = await alkanesRpc[split[1]](...params)
+        console.log(result)
+        requestParams = [split[1], ...params, 'latest']
+      }
+    }
+
     const requestData = {
       jsonrpc: '2.0',
-      method: method,
-      params: params,
-      id: 1,
+      method: requestMethod,
+      params: requestParams,
+     // id: 1,
     }
+
+    console.log(requestData)
 
     const requestOptions = {
       method: 'POST',
@@ -93,7 +125,7 @@ export class AlkanesRpc {
     }
 
     try {
-      const response = await fetch(this.alkanesUrl, requestOptions)
+      const response = await fetch(useUrl, requestOptions)
       const responseData = await response.json()
 
       if (responseData.error) throw new Error(responseData.error.message)

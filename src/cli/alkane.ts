@@ -30,8 +30,15 @@ export const alkanesTrace = new Command('trace')
     '-params, --parameters <parameters>',
     'parameters for the ord method you are calling.'
   )
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
     const provider = wallet.provider
     let isJson: { vout: number; txid: string }
     isJson = JSON.parse(options.parameters)
@@ -75,9 +82,16 @@ export const alkaneContractDeploy = new Command('new-contract')
     'Network provider type (regtest, bitcoin)'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
-
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      feeRate: options.feeRate,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
     const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
       await utxo.accountUtxos({
         account: wallet.account,
@@ -165,8 +179,16 @@ export const alkaneTokenDeploy = new Command('new-token')
     'Network provider type (regtest, bitcoin)'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      feeRate: options.feeRate,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
       await utxo.accountUtxos({
@@ -292,8 +314,17 @@ export const alkaneExecute = new Command('execute')
     'Network provider type (regtest, bitcoin)'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      mnemonic: options.mnemonic,
+      feeRate: options.feeRate,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
       await utxo.accountUtxos({
@@ -362,8 +393,16 @@ export const alkaneRemoveLiquidity = new Command('remove-liquidity')
     'Network provider type (regtest, bitcoin)'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      feeRate: options.feeRate,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
       await utxo.accountUtxos({
@@ -413,8 +452,16 @@ export const alkaneSwap = new Command('swap')
     'Network provider type (regtest, bitcoin)'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      feeRate: options.feeRate,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
       await utxo.accountUtxos({
@@ -465,8 +512,17 @@ export const alkaneSplit = new Command('split')
     'Network provider type (regtest, bitcoin)'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      mnemonic: options.mnemonic,
+      feeRate: options.feeRate,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
       await utxo.accountUtxos({
@@ -525,8 +581,17 @@ export const alkaneSend = new Command('send')
     'Network provider type (regtest, bitcoin)'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      mnemonic: options.mnemonic,
+      feeRate: options.feeRate,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
       await utxo.accountUtxos({
@@ -584,8 +649,17 @@ export const alkaneCreatePool = new Command('create-pool')
     'Network provider type (regtest, bitcoin)'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      mnemonic: options.mnemonic,
+      feeRate: options.feeRate,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
       await utxo.accountUtxos({
@@ -655,8 +729,17 @@ export const alkaneAddLiquidity = new Command('add-liquidity')
     'Network provider type (regtest, bitcoin)'
   )
   .option('-feeRate, --feeRate <feeRate>', 'fee rate')
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      mnemonic: options.mnemonic,
+      feeRate: options.feeRate,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const { accountSpendableTotalUtxos, accountSpendableTotalBalance } =
       await utxo.accountUtxos({
@@ -737,8 +820,15 @@ export const alkaneSimulate = new Command('simulate')
     '-p, --provider <provider>',
     'Network provider type (regtest, bitcoin)'
   )
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const request = {
       alkanes: options.tokens,
@@ -802,8 +892,15 @@ export const alkaneGetAllPoolsDetails = new Command('get-all-pools-details')
     '-p, --provider <provider>',
     'Network provider type (regtest, bitcoin)'
   )
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const wallet: Wallet = new Wallet(options)
+    const wallet: Wallet = new Wallet({
+      provider: options.provider,
+      metashrewRpcUrl: options.metashrewRpcUrl
+    })
 
     const { AlkanesAMMPoolFactoryDecoder, PoolFactoryOpcodes } = await import(
       '../amm/factory'

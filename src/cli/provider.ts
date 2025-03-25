@@ -24,8 +24,26 @@ export const alkanesProvider = new Command('alkanes')
     '-p, --provider <provider>',
     'provider to use to access the network.'
   )
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const provider: Provider = DEFAULT_PROVIDER[options.provider || 'regtest']
+    let provider: Provider
+    
+    if (options.metashrewRpcUrl) {
+      const defaultProvider = DEFAULT_PROVIDER[options.provider || 'regtest']
+      provider = new Provider({
+        url: defaultProvider.url,
+        projectId: defaultProvider.projectId || '',
+        network: defaultProvider.network,
+        networkType: defaultProvider.networkType,
+        version: defaultProvider.version || 'v1',
+        metashrewRpcUrl: options.metashrewRpcUrl
+      })
+    } else {
+      provider = DEFAULT_PROVIDER[options.provider || 'regtest']
+    }
     let isJson: object
     try {
       isJson = JSON.parse(options.parameters)
@@ -57,8 +75,26 @@ export const ordProviderCall = new Command('ord')
     '-params, --parameters <parameters>',
     'parameters for the ord method you are calling.'
   )
+  .option(
+    '--metashrew-rpc-url <url>',
+    'Direct URL to metashrew RPC endpoint'
+  )
   .action(async (options) => {
-    const provider: Provider = DEFAULT_PROVIDER[options.provider]
+    let provider: Provider
+    
+    if (options.metashrewRpcUrl) {
+      const defaultProvider = DEFAULT_PROVIDER[options.provider]
+      provider = new Provider({
+        url: defaultProvider.url,
+        projectId: defaultProvider.projectId || '',
+        network: defaultProvider.network,
+        networkType: defaultProvider.networkType,
+        version: defaultProvider.version || 'v1',
+        metashrewRpcUrl: options.metashrewRpcUrl
+      })
+    } else {
+      provider = DEFAULT_PROVIDER[options.provider]
+    }
     let isJson: object
     try {
       isJson = JSON.parse(options.parameters)
@@ -82,6 +118,10 @@ export const multiCallSandshrewProviderCall = new Command('sandShrewMulticall')
   '-c, --calls <calls>',
   'calls in this format: {method: string, params: string[]}'
 )
+.option(
+  '--metashrew-rpc-url <url>',
+  'Direct URL to metashrew RPC endpoint'
+)
 .action(async (options) => {
   type Call = { method: string; params: string[] }
 
@@ -93,7 +133,21 @@ export const multiCallSandshrewProviderCall = new Command('sandShrewMulticall')
       return [call.method, call.params]
     })
 
-    const provider: Provider = DEFAULT_PROVIDER[options.provider]
+    let provider: Provider
+    
+    if (options.metashrewRpcUrl) {
+      const defaultProvider = DEFAULT_PROVIDER[options.provider]
+      provider = new Provider({
+        url: defaultProvider.url,
+        projectId: defaultProvider.projectId || '',
+        network: defaultProvider.network,
+        networkType: defaultProvider.networkType,
+        version: defaultProvider.version || 'v1',
+        metashrewRpcUrl: options.metashrewRpcUrl
+      })
+    } else {
+      provider = DEFAULT_PROVIDER[options.provider]
+    }
     console.log(await provider.sandshrew.multiCall(multiCall))
   } catch (error) {
     console.log(error)
