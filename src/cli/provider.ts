@@ -8,6 +8,8 @@ import { Provider } from '..'
 
   oyl provider alkanes -method simulate -params '{ "alkanes": [],"transaction": "0x", "block": "0x", "height": "20000", "txindex": 0, "target": {"block": "2", "tx": "1"}, "inputs": ["101"],"pointer": 0, "refundPointer": 0, "vout": 0}' -p regtest
 
+  oyl provider alkanes -method meta -params '{ "target": {"block": "2", "tx": "1"}}' -p regtest
+
   Note the json format if you need to pass an object.
 */
 export const alkanesProvider = new Command('alkanes')
