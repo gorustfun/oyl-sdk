@@ -1,5 +1,7 @@
 import { EsploraRpc } from './esplora';
 export declare const stripHexPrefix: (s: string) => string;
+export declare function mapToPrimitives(v: any): any;
+export declare function unmapFromPrimitives(v: any): any;
 export interface Rune {
     rune: {
         id: {

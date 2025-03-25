@@ -6,6 +6,44 @@ import { AlkanesRpc as AlkanesRpcLib } from 'alkanes/lib/rpc'
 export const stripHexPrefix = (s: string): string =>
   s.substr(0, 2) === '0x' ? s.substr(2) : s
 
+// Helper function to convert BigInt values to hex strings for JSON serialization
+export function mapToPrimitives(v: any): any {
+  switch (typeof v) {
+    case "bigint":
+      return "0x" + v.toString(16);
+    case "object":
+      if (v === null) return null;
+      if (Buffer.isBuffer(v)) return "0x" + v.toString("hex");
+      if (Array.isArray(v)) return v.map((v) => mapToPrimitives(v));
+      return Object.fromEntries(
+        Object.entries(v).map(([key, value]) => [key, mapToPrimitives(value)]),
+      );
+    default:
+      return v;
+  }
+}
+
+// Helper function to convert hex strings back to BigInt values
+export function unmapFromPrimitives(v: any): any {
+  switch (typeof v) {
+    case "string":
+      if (v !== '0x' && !isNaN(v as any)) return BigInt(v);
+      if (v.substr(0, 2) === "0x" || /^[0-9a-f]+$/.test(v)) return Buffer.from(stripHexPrefix(v), "hex");
+      return v;
+    case "object":
+      if (v === null) return null;
+      if (Array.isArray(v)) return v.map((item) => unmapFromPrimitives(item));
+      return Object.fromEntries(
+        Object.entries(v).map(([key, value]) => [
+          key,
+          unmapFromPrimitives(value),
+        ]),
+      );
+    default:
+      return v;
+  }
+}
+
 export interface Rune {
   rune: {
     id: { block: string; tx: string }
@@ -88,14 +126,25 @@ export class AlkanesRpc {
         baseUrl: this.metashrewUrl,
       });
       
-      if (split.length === 1) {
-        // If no namespace is provided, call the method directly
-        return await alkanesRpc[method](...params);
-      } else if (split[0] === 'alkanes') {
-        // If the namespace is 'alkanes', call the method without the namespace
-        const result = await alkanesRpc[split[1]](...params);
-        console.log(result)
-        return result
+      try {
+        let result;
+        
+        // Convert params to the format expected by AlkanesRpcLib
+        const convertedParams = params.map(param => unmapFromPrimitives(param));
+        
+        if (split.length === 1) {
+          // If no namespace is provided, call the method directly
+          result = await alkanesRpc[method](...convertedParams);
+        } else if (split[0] === 'alkanes') {
+          // If the namespace is 'alkanes', call the method without the namespace
+          result = await alkanesRpc[split[1]](...convertedParams);
+        }
+        
+        // Convert the result back to a format that can be serialized to JSON
+        return mapToPrimitives(result);
+      } catch (error) {
+        console.error('AlkanesRpcLib Error:', error);
+        throw error;
       }
     }
 

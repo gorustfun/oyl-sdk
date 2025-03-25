@@ -42,7 +42,7 @@ export class Wallet {
           projectId: defaultProvider.projectId || '',
           network: defaultProvider.network,
           networkType: defaultProvider.networkType,
-          version: defaultProvider.version || 'v1',
+          version: defaultProvider.version,
           metashrewRpcUrl: options.metashrewRpcUrl
         })
       } else {
@@ -62,7 +62,7 @@ export class Wallet {
           projectId: defaultProvider.projectId || '',
           network: defaultProvider.network,
           networkType: defaultProvider.networkType,
-          version: defaultProvider.version || 'v1',
+          version: defaultProvider.version,
           metashrewRpcUrl: options.metashrewRpcUrl
         })
       } else {

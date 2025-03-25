@@ -31,7 +31,7 @@ export class Provider {
     projectId,
     network,
     networkType,
-    version = 'v1',
+    version,
     apiProvider,
     metashrewRpcUrl,  // Add this parameter
   }: ProviderConstructorArgs) {

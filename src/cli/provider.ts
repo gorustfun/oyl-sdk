@@ -38,7 +38,6 @@ export const alkanesProvider = new Command('alkanes')
         projectId: defaultProvider.projectId || '',
         network: defaultProvider.network,
         networkType: defaultProvider.networkType,
-        version: defaultProvider.version || 'v1',
         metashrewRpcUrl: options.metashrewRpcUrl
       })
     } else {
@@ -89,7 +88,6 @@ export const ordProviderCall = new Command('ord')
         projectId: defaultProvider.projectId || '',
         network: defaultProvider.network,
         networkType: defaultProvider.networkType,
-        version: defaultProvider.version || 'v1',
         metashrewRpcUrl: options.metashrewRpcUrl
       })
     } else {
@@ -142,7 +140,6 @@ export const multiCallSandshrewProviderCall = new Command('sandShrewMulticall')
         projectId: defaultProvider.projectId || '',
         network: defaultProvider.network,
         networkType: defaultProvider.networkType,
-        version: defaultProvider.version || 'v1',
         metashrewRpcUrl: options.metashrewRpcUrl
       })
     } else {
