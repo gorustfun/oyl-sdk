@@ -79,41 +79,34 @@ export class AlkanesRpc {
   }
 
   async _call(method: string, params = []) {
-    // If metashrewUrl is provided, use it directly
-    const useUrl = this.metashrewUrl || this.alkanesUrl
-    
-    // Convert method name if using metashrew directly
-    let requestMethod = method
-    let requestParams = params
-    
+    // If metashrewUrl is provided, use AlkanesRpcLib directly
     if (this.metashrewUrl) {
-      // For metashrew, we need to convert the method name
       const split = method.split('_')
+      
+      // Create an instance of AlkanesRpcLib with the metashrew URL
+      const alkanesRpc = new AlkanesRpcLib({
+        baseUrl: this.metashrewUrl,
+      });
+      
       if (split.length === 1) {
-        // If no namespace is provided, use metashrew_view
-        requestMethod = 'metashrew_view'
-        // For metashrew_view, the first param is the method name, followed by the original params
-        requestParams = [method, ...params]
+        // If no namespace is provided, call the method directly
+        return await alkanesRpc[method](...params);
       } else if (split[0] === 'alkanes') {
-        // If the namespace is 'alkanes', use metashrew_view with the method part
-        const alkanesRpc = new AlkanesRpcLib({
-          baseUrl: this.metashrewUrl,
-        })
-
-        const result = await alkanesRpc[split[1]](...params)
+        // If the namespace is 'alkanes', call the method without the namespace
+        const result = await alkanesRpc[split[1]](...params);
         console.log(result)
-        requestParams = [split[1], ...params, 'latest']
+        return result
       }
     }
 
+    // If metashrewUrl is not provided or the method doesn't match the expected format,
+    // use the regular JSON-RPC call
     const requestData = {
       jsonrpc: '2.0',
-      method: requestMethod,
-      params: requestParams,
-     // id: 1,
+      method: method,
+      params: params,
+      id: 1,
     }
-
-    console.log(requestData)
 
     const requestOptions = {
       method: 'POST',
@@ -125,7 +118,7 @@ export class AlkanesRpc {
     }
 
     try {
-      const response = await fetch(useUrl, requestOptions)
+      const response = await fetch(this.alkanesUrl, requestOptions)
       const responseData = await response.json()
 
       if (responseData.error) throw new Error(responseData.error.message)
